@@ -1,5 +1,11 @@
 package chess;
 
+/*
+This class represents a possible move a chess piece could make. It contains the starting and ending positions.
+It also contains a field for the type of piece a pawn is being promoted to. If the move would not result in a
+pawn being promoted, the promotion type field should be null.
+ */
+
 /**
  * Represents moving a chess piece on a chessboard
  * <p>

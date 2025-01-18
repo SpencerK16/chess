@@ -1,5 +1,11 @@
 package chess;
 
+/*
+This represents a location on the chessboard. This should be represented as a row number from 1-8, and
+a column number from 1-8. For example, (1,1) corresponds to the bottom left corner (which in chess notation
+is denoted a1). (8,8) corresponds to the top right corner (h8 in chess notation).
+ */
+
 /**
  * Represents a single square position on a chess board
  * <p>

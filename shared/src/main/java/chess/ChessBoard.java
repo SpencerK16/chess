@@ -1,5 +1,10 @@
 package chess;
 
+/*
+This class stores all the uncaptured pieces in a Game. It needs to support adding and removing pieces for
+testing, as well as a resetBoard() method that sets the standard Chess starting configuration.
+ */
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>

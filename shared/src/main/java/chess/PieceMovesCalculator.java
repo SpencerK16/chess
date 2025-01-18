@@ -3,6 +3,7 @@ package chess;
 public interface PieceMovesCalculator {
 }
  /* HOW EACH PIECE CAN MOVE:
+
     KING: Kings may move 1 square in any direction (including diagonal) to either a position
     occupied by an enemy piece (capturing the enemy piece), or to an unoccupied position. A player
     is not allowed to make any move that would allow the opponent to capture their King. If your King

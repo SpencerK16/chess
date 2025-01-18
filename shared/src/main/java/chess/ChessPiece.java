@@ -2,6 +2,17 @@ package chess;
 
 import java.util.Collection;
 
+
+/*
+This class represents a single chess piece, with its corresponding type and team color. It contains the PieceType
+enumeration that defines the different types of pieces. ChessPiece implements rules that define how a piece moves
+independent of other chess rules such as check, stalemate, or checkmate.
+
+pieceMoves: This method is similar to ChessGame.validMoves, except it does not honor whose turn it is or check if
+the king is being attacked. This method does account for enemy and friendly pieces blocking movement paths. The
+pieceMoves method will need to take into account the type of piece, and the location of other pieces on the board.
+ */
+
 /**
  * Represents a single chess piece
  * <p>
