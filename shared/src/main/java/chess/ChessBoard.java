@@ -5,6 +5,8 @@ This class stores all the uncaptured pieces in a Game. It needs to support addin
 testing, as well as a resetBoard() method that sets the standard Chess starting configuration.
  */
 
+import java.util.HashMap;
+import java.util.Map;
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -12,9 +14,10 @@ testing, as well as a resetBoard() method that sets the standard Chess starting 
  * signature of the existing methods.
  */
 public class ChessBoard {
+    private Map<ChessPosition,ChessPiece> board;
 
     public ChessBoard() {
-        
+        board = new HashMap<>();
     }
 
     /**
@@ -24,7 +27,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        board.put(position, piece);
     }
 
     /**
@@ -35,7 +38,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+       return board.get(position);
     }
 
     /**
@@ -43,6 +46,6 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+
     }
 }
