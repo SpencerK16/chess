@@ -3,7 +3,7 @@ package chess;
 import java.util.Collection;
 
 public interface PieceMovesCalculator {
-    public Collection<ChessMove> calculateMoves(ChessPiece chessPiece, ChessBoard board, ChessPosition position);
+
 }
  /* HOW EACH PIECE CAN MOVE:
 
