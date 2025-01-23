@@ -1,6 +1,36 @@
 package chess;
 
-public class KingMoveCalculator {
+import java.util.Collection;
+import java.util.HashSet;
+
+public class KingMoveCalculator implements PieceMovesCalculator {
+    @Override
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
+        Collection<ChessMove> moves = new HashSet<>();
+        addVerticalAndHorizontalMoves(board, position, moves);
+        addDiagonalMoves(board, position, moves);
+        return moves;
+    }
+
+    private void addVerticalAndHorizontalMoves(ChessBoard board, ChessPosition position, Collection<ChessMove> moves) {
+
+    }
+
+    private void addDiagonalMoves(ChessBoard board, ChessPosition position, Collection<ChessMove> moves) {
+
+    }
+
+    private boolean addMoveIfValid(ChessBoard board, ChessPosition start, ChessPosition end, Collection<ChessMove> moves) {
+        ChessPiece pieceAtEnd = board.getPiece(end);
+        if (pieceAtEnd != null) {
+            if (pieceAtEnd.getTeamColor() != board.getPiece(start).getTeamColor()) {
+                moves.add(new ChessMove(start, end, null)); // Capture move
+            }
+            return false; // Blocked by a piece
+        }
+        moves.add(new ChessMove(start, end, null)); // Normal move
+        return true;
+    }
 }
 
 /*    KING: Kings may move 1 square in any direction (including diagonal) to either a position

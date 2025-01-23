@@ -1,6 +1,29 @@
 package chess;
 
-public class PawnMoveCalculator {
+import java.util.Collection;
+import java.util.HashSet;
+
+public class PawnMoveCalculator implements PieceMovesCalculator {
+    @Override
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
+        Collection<ChessMove> moves = new HashSet<>();
+        //Call the pawn moves finder
+        return moves;
+    }
+
+    //Make the pawn moves finder
+
+    private boolean addMoveIfValid(ChessBoard board, ChessPosition start, ChessPosition end, Collection<ChessMove> moves) {
+        ChessPiece pieceAtEnd = board.getPiece(end);
+        if (pieceAtEnd != null) {
+            if (pieceAtEnd.getTeamColor() != board.getPiece(start).getTeamColor()) {
+                moves.add(new ChessMove(start, end, null)); // Capture move
+            }
+            return false; // Blocked by a piece
+        }
+        moves.add(new ChessMove(start, end, null)); // Normal move
+        return true;
+    }
 }
 
 /*  PAWN: Pawns normally may move forward one square if that square is unoccupied, though if it is the first time that
