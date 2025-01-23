@@ -4,24 +4,59 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class PawnMoveCalculator implements PieceMovesCalculator {
+
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new HashSet<>();
-        //Call the pawn moves finder
+        ChessPiece pawn = board.getPiece(position);
+        if (pawn == null || pawn.getPieceType() != ChessPiece.PieceType.PAWN) {
+            return moves; // No pawn at the position
+        }
+        int direction = (pawn.getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1;
+        addForwardMoves(board, position, direction, moves);// Add normal forward move
+        addCaptureMoves(board, position, direction, moves);// Add diagonal capture moves
+
         return moves;
     }
 
-    //Make the pawn moves finder
+    private void addForwardMoves(ChessBoard board, ChessPosition position, int direction, Collection<ChessMove> moves) {
+        int startRow = position.getRow();
+        int startCol = position.getColumn();
 
-    private void addMoveIfValid(ChessBoard board, ChessPosition start, ChessPosition end, Collection<ChessMove> moves) {
-        ChessPiece pieceAtEnd = board.getPiece(end);
-        if (pieceAtEnd != null) {
-            if (pieceAtEnd.getTeamColor() != board.getPiece(start).getTeamColor()) {
-                moves.add(new ChessMove(start, end, null)); // Capture move
+        // One square forward
+        int newRow = startRow + direction;
+        if (newRow >= 1 && newRow <= 8) {
+            ChessPosition newPosition = new ChessPosition(newRow, startCol);
+            if (board.getPiece(newPosition) == null) {
+                moves.add(new ChessMove(position, newPosition, null)); // Normal move
+                // Two squares forward (only if on the starting row)
+                if ((direction == 1 && startRow == 2) || (direction == -1 && startRow == 7)) {
+                    newRow = startRow + 2 * direction;
+                    newPosition = new ChessPosition(newRow, startCol);
+                    if (board.getPiece(newPosition) == null) {
+                        moves.add(new ChessMove(position, newPosition, null)); // Double move
+                    }
+                }
             }
-            return; //Blocked by piece
         }
-        moves.add(new ChessMove(start, end, null)); // Normal move
+    }
+
+    private void addCaptureMoves(ChessBoard board, ChessPosition position, int direction, Collection<ChessMove> moves) {
+        int startRow = position.getRow();
+        int startCol = position.getColumn();
+        int[] captureDirections = {-1, 1};
+
+        for (int captureDirection : captureDirections) {
+            int newRow = startRow + direction;
+            int newCol = startCol + captureDirection;
+            if (newRow >= 1 && newRow <= 8 && newCol >= 1 && newCol <= 8) {
+                ChessPosition newPosition = new ChessPosition(newRow, newCol);
+                ChessPiece pieceAtEnd = board.getPiece(newPosition);
+                if (pieceAtEnd != null && pieceAtEnd.getTeamColor() != board.getPiece(position).getTeamColor()) {
+                    moves.add(new ChessMove(position, newPosition, null)); // Capture move
+                }
+            }
+        }
     }
 }
 
