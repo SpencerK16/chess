@@ -13,16 +13,15 @@ public class PawnMoveCalculator implements PieceMovesCalculator {
 
     //Make the pawn moves finder
 
-    private boolean addMoveIfValid(ChessBoard board, ChessPosition start, ChessPosition end, Collection<ChessMove> moves) {
+    private void addMoveIfValid(ChessBoard board, ChessPosition start, ChessPosition end, Collection<ChessMove> moves) {
         ChessPiece pieceAtEnd = board.getPiece(end);
         if (pieceAtEnd != null) {
             if (pieceAtEnd.getTeamColor() != board.getPiece(start).getTeamColor()) {
                 moves.add(new ChessMove(start, end, null)); // Capture move
             }
-            return false; // Blocked by a piece
+            return; //Blocked by piece
         }
         moves.add(new ChessMove(start, end, null)); // Normal move
-        return true;
     }
 }
 
