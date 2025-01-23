@@ -9,7 +9,7 @@ public class QueenMoveCalculator implements PieceMovesCalculator {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new HashSet<>();
 
-        // Add all possible vertical, horizontal, and diagonal moves.
+        //Look for Possible moves
         addVerticalAndHorizontalMoves(board, position, moves);
         addDiagonalMoves(board, position, moves);
 
@@ -72,3 +72,7 @@ public class QueenMoveCalculator implements PieceMovesCalculator {
         return true;
     }
 }
+
+/*  QUEEN: Queens are the most powerful piece and may move in straight lines and diagonals as far as there is
+    open space. If there is an enemy piece at the end of the line, they may move to that position and capture the
+    enemy piece. (In simpler terms, Queens can take all moves a Rook or Bishop could take from the Queen's position). */
