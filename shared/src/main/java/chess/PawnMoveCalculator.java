@@ -28,7 +28,11 @@ public class PawnMoveCalculator implements PieceMovesCalculator {
         if (newRow >= 1 && newRow <= 8) {
             ChessPosition newPosition = new ChessPosition(newRow, startCol);
             if (board.getPiece(newPosition) == null) {
-                moves.add(new ChessMove(position, newPosition, null)); // Normal move
+                if (isPromotionRow(newRow, direction)) {
+                    addPromotionMoves(position, newPosition, moves); // Promotion move
+                } else {
+                    moves.add(new ChessMove(position, newPosition, null)); // Normal move
+                }
                 // Two squares forward (only if on the starting row)
                 if ((direction == 1 && startRow == 2) || (direction == -1 && startRow == 7)) {
                     newRow = startRow + 2 * direction;
@@ -53,10 +57,25 @@ public class PawnMoveCalculator implements PieceMovesCalculator {
                 ChessPosition newPosition = new ChessPosition(newRow, newCol);
                 ChessPiece pieceAtEnd = board.getPiece(newPosition);
                 if (pieceAtEnd != null && pieceAtEnd.getTeamColor() != board.getPiece(position).getTeamColor()) {
-                    moves.add(new ChessMove(position, newPosition, null)); // Capture move
+                    if (isPromotionRow(newRow, direction)) {
+                        addPromotionMoves(position, newPosition, moves); // Promotion move on capture
+                    } else {
+                        moves.add(new ChessMove(position, newPosition, null)); // Capture move
+                    }
                 }
             }
         }
+    }
+
+    private boolean isPromotionRow(int row, int direction) {
+        return (direction == 1 && row == 8) || (direction == -1 && row == 1);
+    }
+
+    private void addPromotionMoves(ChessPosition startPosition, ChessPosition endPosition, Collection<ChessMove> moves) {
+        moves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.QUEEN));
+        moves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.ROOK));
+        moves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.BISHOP));
+        moves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.KNIGHT));
     }
 }
 
