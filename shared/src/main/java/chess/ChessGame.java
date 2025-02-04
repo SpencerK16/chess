@@ -1,7 +1,7 @@
 package chess;
 
 import java.util.Collection;
-
+//I have added the test files, and I'm starting this project
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
