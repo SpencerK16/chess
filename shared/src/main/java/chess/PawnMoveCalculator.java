@@ -8,10 +8,8 @@ public class PawnMoveCalculator implements PieceMovesCalculator {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         Collection<ChessMove> moves = new HashSet<>();
+        //Create a pawn variable
         ChessPiece pawn = board.getPiece(position);
-        if (pawn == null || pawn.getPieceType() != ChessPiece.PieceType.PAWN) {
-            return moves; // No pawn at the position
-        }
         int direction = (pawn.getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1;
         addForwardMoves(board, position, direction, moves);// Add normal forward move
         addCaptureMoves(board, position, direction, moves);// Add diagonal capture moves
