@@ -8,6 +8,7 @@ testing, as well as a resetBoard() method that sets the standard Chess starting 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Collection;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -79,5 +80,9 @@ public class ChessBoard {
     @Override
     public int hashCode() {
         return Objects.hashCode(board);
+    }
+
+    public Collection<ChessPosition> getPositions() {
+        return board.keySet();
     }
 }
