@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 //I have added the test files, and I'm starting this project
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -53,23 +54,27 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
-        if (piece == null){
+        if (piece == null) {
             return null;
         }
+        // Get all potential moves for the piece
         Collection<ChessMove> moves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> validMoves = new HashSet<>();
         for (ChessMove move : moves) {
+            // Simulate the move
+            ChessPiece capturedPiece = board.getPiece(move.getEndPosition());
             board.addPiece(move.getEndPosition(), piece);
             board.addPiece(startPosition, null);
 
-            if(!isInCheck(teamColor)) {
+            // Check if the move removes the check condition
+            if (!isInCheck(piece.getTeamColor())) {
                 validMoves.add(move);
             }
-            //This undoes the piece but I think that it would be a lot better if I were to simply make a copy of the board with the possible moves and throw out what is invalid
-            board.addPiece(startPosition, piece);
-            board.addPiece(move.getEndPosition(), null);
-        }
 
+            // Undo the move
+            board.addPiece(startPosition, piece);
+            board.addPiece(move.getEndPosition(), capturedPiece);
+        }
         return validMoves;
     }
 
@@ -80,14 +85,25 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if (validMoves(move.getStartPosition()).contains(move)) {
-            board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
-            board.addPiece(move.getStartPosition(), null);
-            // Switch turns
-            teamColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;  // Updated to use teamColor
-        } else {
+        Collection<ChessMove> moves = validMoves(move.getStartPosition());
+        if (!moves.contains(move)) {
             throw new InvalidMoveException("Invalid move");
         }
+
+        // Make the move
+        board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
+        board.addPiece(move.getStartPosition(), null);
+
+        // Check if the move still leaves the current team's king in check
+        if (isInCheck(teamColor)) {
+            // Undo the move if it leaves the king in check
+            board.addPiece(move.getStartPosition(), board.getPiece(move.getEndPosition()));
+            board.addPiece(move.getEndPosition(), null);
+            throw new InvalidMoveException("Move leaves king in check");
+        }
+
+        // Switch turns
+        teamColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
     /**
