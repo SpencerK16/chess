@@ -172,7 +172,8 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             return false;
         }
-        for (ChessPosition position : board.getPositions()) {
+        List<ChessPosition> myPos = board.getPositions().stream().toList();
+        for (ChessPosition position : myPos) {
             ChessPiece piece = board.getPiece(position);
             if (piece != null && piece.getTeamColor() == teamColor) {
                 Collection<ChessMove> moves = validMoves(position);
