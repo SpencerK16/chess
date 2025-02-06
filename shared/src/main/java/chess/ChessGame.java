@@ -200,6 +200,13 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        return board;
+        ChessBoard copyboard = new ChessBoard();
+        for (ChessPosition current_positions : board.getPositions())
+        {
+            if (board.getPiece(current_positions) != null){
+                copyboard.addPiece(current_positions, board.getPiece(current_positions));
+            }
+        }
+        return copyboard;
     }
 }
