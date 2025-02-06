@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 //I have added the test files, and I'm starting this project
 /**
@@ -147,7 +148,8 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             return false;
         }
-        for (ChessPosition position : board.getPositions()) {
+        List<ChessPosition> myPos = board.getPositions().stream().toList();
+        for (ChessPosition position : myPos) {
             ChessPiece piece = board.getPiece(position);
             if (piece != null && piece.getTeamColor() == teamColor) {
                 Collection<ChessMove> moves = validMoves(position);
