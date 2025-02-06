@@ -368,6 +368,7 @@ public class MakeMoveTests {
         Assertions.assertNull(game.getBoard().getPiece(whitePromotion.getStartPosition()), pieceAtStart);
         ChessPiece whiteEndPiece = game.getBoard().getPiece(whitePromotion.getEndPosition());
         Assertions.assertNotNull(whiteEndPiece, noPieceAtEnd);
+
         Assertions.assertEquals(promotionType, whiteEndPiece.getPieceType(), incorrectType);
         Assertions.assertEquals(ChessGame.TeamColor.WHITE, whiteEndPiece.getTeamColor(), incorrectColor);
 

@@ -91,9 +91,15 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid move");
         }
 
+
         // Make the move
         board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
         board.addPiece(move.getStartPosition(), null);
+
+        //Add in pawn promotions
+        if (board.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN) {
+            PawnMoveCalculator pawnMoveCalculator = new PawnMoveCalculator();
+        }
 
         // Check if the move still leaves the current team's king in check
         if (isInCheck(teamColor)) {
