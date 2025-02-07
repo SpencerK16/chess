@@ -86,8 +86,13 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+
         Collection<ChessMove> moves = validMoves(move.getStartPosition());
         if (moves == null || !moves.contains(move)) {
+            throw new InvalidMoveException("Invalid move");
+        }
+
+        if(board.getPiece(move.getStartPosition()).getTeamColor() != teamColor){
             throw new InvalidMoveException("Invalid move");
         }
 
@@ -100,11 +105,6 @@ public class ChessGame {
             board.addPiece(move.getEndPosition(), board.getPiece(move.getStartPosition()));
         }
         board.addPiece(move.getStartPosition(), null);
-
-        //Add in pawn promotions
-//        if (board.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN) {
-//            PawnMoveCalculator pawnMoveCalculator = new PawnMoveCalculator();
-//        }
 
         // Check if the move still leaves the current team's king in check
         if (isInCheck(teamColor)) {
