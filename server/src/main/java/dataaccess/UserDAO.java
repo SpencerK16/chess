@@ -12,6 +12,7 @@ public class UserDAO {
     //Read information about users
     public UserData getUser(String username) throws DataAccessException{
         //return UserData in form of a string
+        return new UserData("placeholder_username", "placeholder_password", "placeholder@email.com");
     }
 
     //Update information already in user
