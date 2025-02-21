@@ -7,9 +7,9 @@ public class LoginService {
 
     private final LoginRequest request;
 
-    private final UserDAO userDao;
+    //private final UserDAO userDao;
 
-    private final AuthDAO authtokenDAO;
+    //private final AuthDAO authtokenDAO;
 
 
 }
