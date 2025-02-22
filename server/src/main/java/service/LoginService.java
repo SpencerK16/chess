@@ -5,7 +5,7 @@ import dataaccess.UserDAO;
 
 public class LoginService {
 
-    private final LoginRequest request;
+    //private final LoginRequest request;
 
     //private final UserDAO userDao;
 
