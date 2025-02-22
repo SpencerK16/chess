@@ -1,27 +1,49 @@
 package dataaccess;
 
 import model.UserData;
+import java.util.Map;
+import java.util.HashMap;
 
 public class UserDAO {
 
+    private Map<String, UserData> users;
+
+    public UserDAO() {
+        users = new HashMap<>();
+    }
+
     //Create User
     public void insertUser(UserData user) throws  DataAccessException{
-        //Convert the inputs strings and set them to be user.username(), user.password(), and user.email().
+        if (users.containsKey(user.username())) {
+            throw new DataAccessException("User already exists.");
+        }
+        users.put(user.username(), user);
     }
 
     //Read information about users
     public UserData getUser(String username) throws DataAccessException{
-        //return UserData in form of a string
-        return new UserData("placeholder_username", "placeholder_password", "placeholder@email.com");
+        if (users.containsKey(username)) {
+            return users.get(username);
+        }
+        throw new DataAccessException("User doesn't exist.");
     }
 
     //Update information already in user
     public void updateUser(UserData user) throws DataAccessException{
         //Get new string and convert it to needed change
+        if (users.containsKey(user.username())) {
+            users.put(user.username(), user);
+        }
+        throw new DataAccessException("User doesn't exist.");
     }
+
     //Deletes a user
     public void deleteUser(String username) throws DataAccessException{
         //Pick which uses should be deleted and then deletes it
+        if (users.containsKey(username)) {
+            users.remove(username);
+        }
+        throw new DataAccessException("User doesn't exist.");
     }
 
 }
