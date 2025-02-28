@@ -1,4 +1,4 @@
 package results;
 
-public record ClearResult() {
+public record ClearResult(Boolean success, String message) {
 }
