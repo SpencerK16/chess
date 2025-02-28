@@ -20,22 +20,17 @@ public class ListGamesService {
         this.gameDAO = gameDAO;
     }
 
-    // Method to list all games for the logged-in user
     public ListGamesResult listGames() {
         try {
-            // Step 1: Check if the authToken is valid
-            String username = authDAO.getAuth(request.authToken());
+            String username = authDAO.getUser(request.authToken());
 
             if (username == null) {
-                // If the authToken is invalid, return a failure result
-                return new ListGamesResult(false, null, null, null, null, "Error: Unauthorized (Invalid authToken)");
+                return new ListGamesResult(false, null, "Error: Unauthorized (Invalid authToken)");
             }
 
-            // Step 2: Fetch the games associated with this user (you can adjust this logic to your database schema)
-            List<String> gameIDs = gameDAO.getGamesForUser(username); // This method should return a list of game IDs for the user
+            List<String> gameIDs = gameDAO.getUserGames(username); // This method should return a list of game IDs for the user
 
             if (gameIDs.isEmpty()) {
-                // If no games found, return a result indicating no games
                 return new ListGamesResult(false, null, null, null, null, "No games found for the user");
             }
 

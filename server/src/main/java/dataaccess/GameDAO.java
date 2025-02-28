@@ -2,14 +2,24 @@ package dataaccess;
 
 import model.GameData;
 
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 public class GameDAO {
     private Map<Integer, GameData> games;
 
     public GameDAO(){
         games = new HashMap<>();
+    }
+
+    public List<String> getUserGames(String user) {
+        List<String> toReturn = new LinkedList<>();
+        for(Map.Entry<Integer, GameData> e : games.entrySet()) {
+            if(Objects.equals(e.getValue().whiteUsername(), user) || Objects.equals(e.getValue().blackUsername(), user)) {
+                toReturn.add(Integer.toString(e.getValue().gameID()));
+            }
+        }
+
+        return toReturn;
     }
 
     public void insertGame(GameData gameData) throws DataAccessException {
