@@ -46,6 +46,10 @@ public class UserDAO {
         throw new DataAccessException("User doesn't exist.");
     }
 
+    public void clear() throws DataAccessException {
+        users.clear();
+    }
+
 }
 
 //String username, String password, String email

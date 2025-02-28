@@ -9,14 +9,14 @@ import results.RegisterResult;
 import java.util.UUID;
 
 public class RegisterService {
-    private RegisterRequest request;
-    private UserDAO userDAO;
-    private AuthDAO authDAO;
+    private final RegisterRequest request;
+    private final UserDAO userDAO;
+    private final AuthDAO authDAO;
 
-    public RegisterService(RegisterRequest request, UserDAO userDAO, AuthDAO authDAO) {
+    public RegisterService(RegisterRequest request) {
         this.request = request;
-        this.userDAO = userDAO;
-        this.authDAO = authDAO;
+        this.userDAO = new UserDAO();
+        this.authDAO = new AuthDAO();
         // Initialize DAOs
         // Store request
     }

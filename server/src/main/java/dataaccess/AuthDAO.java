@@ -2,8 +2,10 @@ package dataaccess;
 
 import model.AuthData;
 
+import java.security.KeyPair;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class AuthDAO {
 
@@ -28,6 +30,14 @@ public class AuthDAO {
         throw new DataAccessException("AuthToken doesn't exist.");
     }
 
+    public String getUser(String authData) {
+        for(Map.Entry<String, AuthData> e : authTokens.entrySet()) {
+            if(Objects.equals(e.getValue().toString(), authData)) return e.getKey();
+        }
+
+        return "";
+    }
+
     // Update AuthData
     public void updateAuth(AuthData authData) throws DataAccessException {
         if (authTokens.containsKey(authData.username())) {
@@ -43,6 +53,10 @@ public class AuthDAO {
         }
         throw new DataAccessException("User doesn't exist.");
 
+    }
+
+    public void clear() throws DataAccessException {
+        authTokens.clear();
     }
 }
 //String authToken, String username

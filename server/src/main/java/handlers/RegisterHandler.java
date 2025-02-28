@@ -41,7 +41,7 @@ public class RegisterHandler {
 
         RegisterRequest registerRequest = new RegisterRequest(username, password, email);
 
-        RegisterService registerService = new RegisterService(registerRequest, userDAO, authDAO);
+        RegisterService registerService = new RegisterService(registerRequest);
 
         RegisterResult result = registerService.register();
 

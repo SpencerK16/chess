@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
@@ -30,12 +31,13 @@ public class CreateGameService {
             if (authData == null) {
                 return new CreateGameResult(false, null, "Error: Unauthorized");
             }
-            String gameID = UUID.randomUUID().toString();
-            GameData newGame = new GameData(gameID, request.gameName(), authData.username(), null); // White user is the one creating the game
+            int gameID = Integer.getInteger(UUID.randomUUID().toString());
+
+            GameData newGame = new GameData(gameID, "", "",  request.gameName(), new ChessGame());
 
             gameDAO.insertGame(newGame);
 
-            return new CreateGameResult(true, gameID, "Game created successfully");
+            return new CreateGameResult(true, Integer.toString(gameID), "Game created successfully");
 
         } catch (Exception e) {
             return new CreateGameResult(false, null, "Error: " + e.getMessage());

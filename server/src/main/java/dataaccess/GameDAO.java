@@ -43,4 +43,8 @@ public class GameDAO {
         throw new DataAccessException("Game with this ID doesn't exist.");
 
     }
+
+    public void clear() throws DataAccessException {
+        games.clear();
+    }
 }

@@ -1,4 +1,8 @@
 package results;
 
-public record ListGamesResult(Boolean success, String gameID, String whiteUsername, String blackUsername, String gameName, String message) {
+import model.GameData;
+
+import java.util.List;
+
+public record ListGamesResult(Boolean success, List<GameData> games, String message) {
 }
