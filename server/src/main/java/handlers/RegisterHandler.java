@@ -3,11 +3,17 @@ package handlers;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.sun.net.httpserver.HttpExchange;
+import model.AuthData;
+import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 import results.RegisterResult;
 import request.RegisterRequest;
 import service.RegisterService;
 import dataaccess.UserDAO;
 import dataaccess.AuthDAO;
+import spark.Request;
+import spark.Response;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -24,42 +30,40 @@ public class RegisterHandler {
         this.authDAO = authDAO;
     }
 
-    public RegisterResult processRequest(HttpExchange exchange) throws IOException {
-        String method = exchange.getRequestMethod();
-        if (!method.equals("POST")) {
-            return new RegisterResult(false, null, null, "Error: Only POST requests are allowed");
-        }
-
-        InputStreamReader reader = new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8);
+    public static Object processRequest(Request req, Response res) throws IOException {
         Gson gson = new Gson();
 
-        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        UserData newUser = gson.fromJson(req.body(), UserData.class);
 
-        String username = json.get("username").getAsString();
-        String password = json.get("password").getAsString();
-        String email = json.get("email").getAsString();
-
-        RegisterRequest registerRequest = new RegisterRequest(username, password, email);
+        RegisterRequest registerRequest = new RegisterRequest(newUser.username(), newUser.password(), newUser.email());
 
         RegisterService registerService = new RegisterService(registerRequest);
 
         RegisterResult result = registerService.register();
 
-        sendResponse(exchange, result);
-
-        return result;
-    }
-
-    private void sendResponse(HttpExchange exchange, RegisterResult result) throws IOException {
-        Gson gson = new Gson();
-        String jsonResponse = gson.toJson(result);
-
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-        exchange.sendResponseHeaders(200, jsonResponse.getBytes().length);
-
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(jsonResponse.getBytes());
+        if(result.success()) {
+            res.status(200);
+            res.body(gson.toJson(new AuthData(result.username(), result.authToken())));
+        } else {
+            if(result.message() == "Error: Password too short") {
+                res.status(400);
+                res.body("{ \"message\": \"Error: bad request\" } ");
+            }
+            else if(result.message() == "Error: Username already taken") {
+                res.status(403);
+                res.body("{ \"message\": \"Error: already taken\" } ");
+            }
+            else {
+                res.status(500);
+                StringBuilder sb = new StringBuilder();
+                sb.append("{ \"message\": Error:");
+                sb.append(result.message());
+                sb.append(" \" } ");
+                res.body(sb.toString());
+            }
         }
+
+        return "";
     }
 }
 

@@ -2,43 +2,31 @@ package handlers;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
+import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
+import dataaccess.UserDAO;
+import org.eclipse.jetty.server.Authentication;
 import results.ClearResult;
 import service.ClearService;
+import spark.Request;
+import spark.Response;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class ClearHandler {
+    public ClearHandler() {}
 
-    private final ClearService clearService;
+    public static Object processRequest(Request req, Response res) {
+        ClearResult result = new ClearService(new UserDAO(), new GameDAO(), new AuthDAO()).clear();
 
-    public ClearHandler(ClearService clearService) {
-        this.clearService = clearService;
-    }
-
-    public void processRequest(HttpExchange exchange) throws IOException {
-        String method = exchange.getRequestMethod();
-
-        if (!method.equals("POST")) {
-            sendResponse(exchange, new ClearResult(false, "Error: Only POST requests are allowed"));
-            return;
+        if(result.success()) {
+            res.status(200);
+        } else {
+            res.status(500);
+            res.body(new Gson().toJson(result.message()));
         }
 
-        ClearResult result = clearService.clear();
-
-        sendResponse(exchange, result);
-    }
-
-    private void sendResponse(HttpExchange exchange, ClearResult result) throws IOException {
-        Gson gson = new Gson();
-        String jsonResponse = gson.toJson(result);
-
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-
-        exchange.sendResponseHeaders(result.success() ? 200 : 400, jsonResponse.getBytes().length);
-
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(jsonResponse.getBytes());
-        }
+        return "";
     }
 }

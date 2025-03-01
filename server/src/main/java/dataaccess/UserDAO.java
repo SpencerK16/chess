@@ -6,37 +6,35 @@ import java.util.HashMap;
 
 public class UserDAO {
 
-    private Map<String, UserData> users;
-
     public UserDAO() {
-        users = new HashMap<>();
     }
 
     //Create User
     public void insertUser(UserData user) throws  DataAccessException{
-        if (users.containsKey(user.username())) {
+        if (DataStore.users.containsKey(user.username())) {
             throw new DataAccessException("User already exists.");
         }
-        users.put(user.username(), user);
+
+        DataStore.users.put(user.username(), user);
     }
 
     //Read information about users
     public UserData getUser(String username) throws DataAccessException{
-        if (users.containsKey(username)) {
-            return users.get(username);
+        if (DataStore.users.containsKey(username)) {
+            return DataStore.users.get(username);
         }
         throw new DataAccessException("User doesn't exist.");
     }
 
     public boolean usernameExists(String username) throws DataAccessException {
-        return users.containsKey(username);
+        return DataStore.users.containsKey(username);
     }
 
     //Update information already in user
     public void updateUser(UserData user) throws DataAccessException{
         //Get new string and convert it to needed change
-        if (users.containsKey(user.username())) {
-            users.put(user.username(), user);
+        if (DataStore.users.containsKey(user.username())) {
+            DataStore.users.put(user.username(), user);
         }
         throw new DataAccessException("User doesn't exist.");
     }
@@ -44,14 +42,14 @@ public class UserDAO {
     //Deletes a user
     public void deleteUser(String username) throws DataAccessException{
         //Pick which uses should be deleted and then deletes it
-        if (users.containsKey(username)) {
-            users.remove(username);
+        if (DataStore.users.containsKey(username)) {
+            DataStore.users.remove(username);
         }
         throw new DataAccessException("User doesn't exist.");
     }
 
     public void clear() throws DataAccessException {
-        users.clear();
+        DataStore.users.clear();
     }
 
 }

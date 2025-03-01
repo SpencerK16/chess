@@ -9,22 +9,20 @@ import java.util.Objects;
 
 public class AuthDAO {
 
-    private Map<String, AuthData> authTokens;
 
     public AuthDAO() {
-        authTokens = new HashMap<>();
     }
 
     public void insertAuth(AuthData authData) throws DataAccessException {
-        if (authTokens.containsKey(authData.username())) {
-            throw new DataAccessException("User already exists.");
+        if (DataStore.authTokens.containsKey(authData.username())) {
+            DataStore.authTokens.remove(authData.username());
         }
-        authTokens.put(authData.username(), authData);
+        DataStore.authTokens.put(authData.username(), authData);
     }
 
     // Read AuthData based on username
     public AuthData getAuth(String authtoken) throws DataAccessException {
-        for(AuthData a : authTokens.values()) {
+        for(AuthData a : DataStore.authTokens.values()) {
             if(a.authToken() == authtoken) return a;
         }
 
@@ -32,7 +30,7 @@ public class AuthDAO {
     }
 
     public String getUser(String authData) {
-        for(Map.Entry<String, AuthData> e : authTokens.entrySet()) {
+        for(Map.Entry<String, AuthData> e : DataStore.authTokens.entrySet()) {
             if(Objects.equals(e.getValue().authToken(), authData)) return e.getKey();
         }
 
@@ -41,16 +39,16 @@ public class AuthDAO {
 
     // Update AuthData
     public void updateAuth(AuthData authData) throws DataAccessException {
-        if (authTokens.containsKey(authData.username())) {
-            authTokens.put(authData.username(), authData);
+        if (DataStore.authTokens.containsKey(authData.username())) {
+            DataStore.authTokens.put(authData.username(), authData);
         }
         throw new DataAccessException("User doesn't exist.");
     }
 
     // Delete AuthData based on Username
     public void deleteAuth(String username) throws DataAccessException {
-        if (authTokens.containsKey(username)) {
-            authTokens.remove(username);
+        if (DataStore.authTokens.containsKey(username)) {
+            DataStore.authTokens.remove(username);
             return;
         }
         throw new DataAccessException("User doesn't exist.");
@@ -58,7 +56,7 @@ public class AuthDAO {
     }
 
     public void clear() throws DataAccessException {
-        authTokens.clear();
+        DataStore.authTokens.clear();
     }
 }
 //String authToken, String username
