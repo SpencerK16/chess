@@ -28,6 +28,10 @@ public class UserDAO {
         throw new DataAccessException("User doesn't exist.");
     }
 
+    public boolean usernameExists(String username) throws DataAccessException {
+        return users.containsKey(username);
+    }
+
     //Update information already in user
     public void updateUser(UserData user) throws DataAccessException{
         //Get new string and convert it to needed change

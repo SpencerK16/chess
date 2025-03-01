@@ -1,11 +1,10 @@
-package java.service;
+package service;
 
 import dataaccess.UserDAO;
 import dataaccess.DataAccessException;
 import model.UserData;
 import request.LoginRequest;
 import results.LoginResult;
-import service.LoginService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

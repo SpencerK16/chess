@@ -34,15 +34,12 @@ public class ListGamesService {
                 return new ListGamesResult(false, null, "No games found for the user");
             }
 
-            // Step 3: Loop through the games and get the necessary details (e.g., gameID, whiteUsername, blackUsername, gameName)
-
-
             // Step 4: Return a successful result with the games information
-            return new ListGamesResult(true,  "Games retrieved successfully");
+            return new ListGamesResult(true,  gameDAO.getGamesById(gameIDs), "Games retrieved successfully");
 
         } catch (Exception e) {
             // If any exception occurs, return a failure result with the error message
-            return new ListGamesResult(false, null, null, null, null, "Error: " + e.getMessage());
+            return new ListGamesResult(false, null, "Error: " + e.getMessage());
         }
     }
 }

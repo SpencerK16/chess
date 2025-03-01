@@ -1,4 +1,4 @@
-package java.service;
+package service;
 
 
 import dataaccess.UserDAO;
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import request.RegisterRequest;
 import results.RegisterResult;
 import service.RegisterService;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RegisterTest {

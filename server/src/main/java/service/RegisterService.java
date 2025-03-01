@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
@@ -23,11 +24,9 @@ public class RegisterService {
 
     public RegisterResult register() {
         try {
-            UserData existingUser = userDAO.getUser(request.username());
-            if (existingUser != null) {
+            if(userDAO.usernameExists(request.username())) {
                 return new RegisterResult(false, null, null, "Error: Username already taken");
             }
-
             if (request.password().length() < 6) {
                 return new RegisterResult(false, null, null, "Error: Password too short");
             }
