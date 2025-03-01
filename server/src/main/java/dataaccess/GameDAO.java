@@ -57,4 +57,16 @@ public class GameDAO {
     public void clear() throws DataAccessException {
         games.clear();
     }
+
+    public List<GameData> getGamesById(List<String> ids) {
+        List<GameData> toReturn = new LinkedList<>();
+
+        for(GameData d : games.values()) {
+            if(ids.contains(Integer.toString(d.gameID()))) {
+                toReturn.add(d);
+            }
+        }
+
+        return toReturn;
+    }
 }

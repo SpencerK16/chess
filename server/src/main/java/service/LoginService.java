@@ -11,14 +11,14 @@ import java.util.UUID;
 
 public class LoginService {
 
-    private LoginRequest request;
-    private UserDAO userDAO;
-    private AuthDAO authDAO;
+    private final LoginRequest request;
+    private final UserDAO userDAO;
+    private final AuthDAO authDAO;
 
-    public LoginService(LoginRequest request, UserDAO userDAO, AuthDAO authDAO) {
+    public LoginService(LoginRequest request) {
         this.request = request;
-        this.userDAO = userDAO;
-        this.authDAO = authDAO;
+        this.userDAO = new UserDAO();
+        this.authDAO = new AuthDAO();
     }
 
 

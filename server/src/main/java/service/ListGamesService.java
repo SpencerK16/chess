@@ -31,18 +31,14 @@ public class ListGamesService {
             List<String> gameIDs = gameDAO.getUserGames(username); // This method should return a list of game IDs for the user
 
             if (gameIDs.isEmpty()) {
-                return new ListGamesResult(false, null, null, null, null, "No games found for the user");
+                return new ListGamesResult(false, null, "No games found for the user");
             }
 
             // Step 3: Loop through the games and get the necessary details (e.g., gameID, whiteUsername, blackUsername, gameName)
-            // This will depend on your game database schema.
-            String gameID = gameIDs.get(0); // Just using the first game as an example; adjust as needed
-            String whiteUsername = "user1"; // Get this from your database
-            String blackUsername = "user2"; // Get this from your database
-            String gameName = "Game1"; // Get this from your database
+
 
             // Step 4: Return a successful result with the games information
-            return new ListGamesResult(true, gameID, whiteUsername, blackUsername, gameName, "Games retrieved successfully");
+            return new ListGamesResult(true,  "Games retrieved successfully");
 
         } catch (Exception e) {
             // If any exception occurs, return a failure result with the error message

@@ -41,7 +41,7 @@ public class LoginHandler {
 
         LoginRequest loginRequest = new LoginRequest(username, password);
 
-        LoginService loginService = new LoginService(loginRequest, userDAO, authDAO);
+        LoginService loginService = new LoginService(loginRequest);
         LoginResult result = loginService.login();
 
         if (result.success()) {

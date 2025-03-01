@@ -70,7 +70,7 @@ public class RegisterTest {
         assertNotNull(result.message());
     }
 
-    /**
+     /*
      * Negative test case which tests a user putting a blank password in.
      */
     @Test
