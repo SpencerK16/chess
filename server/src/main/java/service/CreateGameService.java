@@ -8,6 +8,8 @@ import model.GameData;
 import model.AuthData;
 import request.CreateGameRequest;
 import results.CreateGameResult;
+
+import java.util.Random;
 import java.util.UUID;
 
 public class CreateGameService {
@@ -31,7 +33,8 @@ public class CreateGameService {
             if (authData == null) {
                 return new CreateGameResult(false, null, "Error: Unauthorized");
             }
-            int gameID = Integer.getInteger(UUID.randomUUID().toString());
+
+            int gameID = new Random().nextInt(1000);
 
             GameData newGame = new GameData(gameID, "", "",  request.gameName(), new ChessGame());
 

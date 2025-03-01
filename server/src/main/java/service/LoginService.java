@@ -6,6 +6,7 @@ import model.AuthData;
 import model.UserData;
 import request.LoginRequest;
 import results.LoginResult;
+import results.RegisterResult;
 
 import java.util.UUID;
 
@@ -21,13 +22,19 @@ public class LoginService {
         this.authDAO = new AuthDAO();
     }
 
+    public LoginService(LoginRequest request, UserDAO userDAO, AuthDAO authDAO) {
+        this.request = request;
+        this.userDAO = userDAO;
+        this.authDAO = authDAO;
+    }
 
     public LoginResult login() {
         try {
-            UserData existingUser = userDAO.getUser(request.username());
-            if (existingUser == null) {
-                return new LoginResult(false, null, null, "Error: Unauthorized");
+            if(!userDAO.usernameExists(request.username())) {
+                return new LoginResult(false, null, null, "Error: User does nto exist!n");
             }
+
+            UserData existingUser = userDAO.getUser(request.username());
 
             if (!existingUser.password().equals(request.password())) {
                 return new LoginResult(false, null, null, "Error: Unauthorized");

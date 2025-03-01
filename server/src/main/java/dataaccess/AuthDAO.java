@@ -23,16 +23,17 @@ public class AuthDAO {
     }
 
     // Read AuthData based on username
-    public AuthData getAuth(String username) throws DataAccessException {
-        if (authTokens.containsKey(username)) {
-            return authTokens.get(username);
+    public AuthData getAuth(String authtoken) throws DataAccessException {
+        for(AuthData a : authTokens.values()) {
+            if(a.authToken() == authtoken) return a;
         }
+
         throw new DataAccessException("AuthToken doesn't exist.");
     }
 
     public String getUser(String authData) {
         for(Map.Entry<String, AuthData> e : authTokens.entrySet()) {
-            if(Objects.equals(e.getValue().toString(), authData)) return e.getKey();
+            if(Objects.equals(e.getValue().authToken(), authData)) return e.getKey();
         }
 
         return "";
@@ -50,6 +51,7 @@ public class AuthDAO {
     public void deleteAuth(String username) throws DataAccessException {
         if (authTokens.containsKey(username)) {
             authTokens.remove(username);
+            return;
         }
         throw new DataAccessException("User doesn't exist.");
 

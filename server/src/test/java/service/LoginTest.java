@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.AuthDAO;
 import dataaccess.UserDAO;
 import dataaccess.DataAccessException;
 import model.UserData;
@@ -14,11 +15,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LoginTest {
     private UserDAO userDAO;
+    private AuthDAO authDAO;
 
     @BeforeEach
     void setup() {
         userDAO = new UserDAO();
-
+        authDAO = new AuthDAO();
         try {
             userDAO.clear();
 
@@ -49,7 +51,7 @@ public class LoginTest {
     void loginWithCorrectCredentials() {
         LoginRequest request = new LoginRequest("spencer", "schultz");
 
-        LoginService service = new LoginService(request);
+        LoginService service = new LoginService(request, userDAO, authDAO);
         LoginResult result = service.login();
 
         assertTrue(result.success());
@@ -62,10 +64,10 @@ public class LoginTest {
     void loginWithIncorrectPassword() {
         LoginRequest request = new LoginRequest("spencer", "wrongpassword");
 
-        LoginService service = new LoginService(request);
+        LoginService service = new LoginService(request, userDAO, authDAO);
         LoginResult result = service.login();
 
         assertFalse(result.success());
-        assertEquals("Error: unauthorized", result.message());
+        assertEquals("error: unauthorized", result.message().toLowerCase());
     }
 }

@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import model.AuthData;
 import request.LogoutRequest;
 import results.LogoutResult;
 
@@ -19,15 +20,15 @@ public class LogoutService {
     public LogoutResult logout() {
         try {
             // Step 1: Check if the authToken exists in the AuthDAO
-            boolean tokenExists = authDAO.getAuth(request.authToken()) != null;
+            AuthData token = authDAO.getAuth(request.authToken());
 
-            if (!tokenExists) {
+            if (token == null) {
                 // If the token does not exist, return a failure result
                 return new LogoutResult(false, "Error: Invalid authToken");
             }
 
             // Step 2: Remove the authToken from the DAO
-            authDAO.deleteAuth(request.authToken());
+            authDAO.deleteAuth(token.username());
 
             // Step 3: Return a success result
             return new LogoutResult(true, "Logout successful");
