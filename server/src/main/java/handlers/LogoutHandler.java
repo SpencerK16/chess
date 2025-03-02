@@ -19,15 +19,15 @@ public class LogoutHandler {
     public static Object processRequest(Request req, Response res) throws IOException {
         String authToken = req.headers("authorization");
 
+        LogoutRequest logoutRequest = new LogoutRequest(authToken);
+        LogoutService logoutService = new LogoutService(logoutRequest, authDAO);
+        LogoutResult result = logoutService.logout();
+
         if (authToken == null || authToken.isEmpty()) {
             res.status(401);
             res.body("{ \"message\": \"Error: unauthorized\" } ");
             return "";
         }
-
-        LogoutRequest logoutRequest = new LogoutRequest(authToken);
-        LogoutService logoutService = new LogoutService(logoutRequest, authDAO);
-        LogoutResult result = logoutService.logout();
 
         if (result.success()) {
             res.status(200);
