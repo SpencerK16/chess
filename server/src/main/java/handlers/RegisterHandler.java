@@ -1,11 +1,8 @@
 package handlers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.sun.net.httpserver.HttpExchange;
 import model.AuthData;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import results.RegisterResult;
 import request.RegisterRequest;
 import service.RegisterService;
@@ -13,11 +10,8 @@ import dataaccess.UserDAO;
 import dataaccess.AuthDAO;
 import spark.Request;
 import spark.Response;
-
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
+
 
 public class RegisterHandler {
 
@@ -34,6 +28,7 @@ public class RegisterHandler {
         Gson gson = new Gson();
 
         UserData newUser = gson.fromJson(req.body(), UserData.class);
+
 
         RegisterRequest registerRequest = new RegisterRequest(newUser.username(), newUser.password(), newUser.email());
 
@@ -66,16 +61,3 @@ public class RegisterHandler {
         return "";
     }
 }
-
-
-        /*
-            Get the request method (post/get)
-            Validate that it is POST
-            Get the request
-            Use the given code to parse the request
-            Initialize a Gson instance
-            Use Gson to read the data into a request
-            make a new service (put the request into the service)
-            call the service.register()
-            Return the result
-         */

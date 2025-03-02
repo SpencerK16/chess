@@ -21,7 +21,7 @@ public class ListGamesHandler {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
     }
-
+    // String authToken = req.attributes().toArray()[0];
     public void processRequest(HttpExchange exchange) throws IOException {
         String method = exchange.getRequestMethod();
         if (!method.equals("POST")) {

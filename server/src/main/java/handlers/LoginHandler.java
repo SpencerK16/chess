@@ -3,11 +3,15 @@ package handlers;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.sun.net.httpserver.HttpExchange;
+import model.AuthData;
+import model.UserData;
 import results.LoginResult;
 import request.LoginRequest;
 import service.LoginService;
 import dataaccess.UserDAO;
 import dataaccess.AuthDAO;
+import spark.Request;
+import spark.Response;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,57 +28,35 @@ public class LoginHandler {
         this.authDAO = authDAO;
     }
 
-    public void processRequest(HttpExchange exchange) throws IOException {
-        String method = exchange.getRequestMethod();
-
-        if (!method.equals("POST")) {
-            sendErrorResponse(exchange, 405, "Error: Only POST requests are allowed");
-            return;
-        }
-
-        InputStreamReader reader = new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8);
+    public static Object processRequest(Request req, Response res) throws IOException {
         Gson gson = new Gson();
-        JsonObject json = gson.fromJson(reader, JsonObject.class);
 
-        String username = json.get("username").getAsString();
-        String password = json.get("password").getAsString();
+        UserData user = gson.fromJson(req.body(), UserData.class);
 
-        LoginRequest loginRequest = new LoginRequest(username, password);
+        LoginRequest loginRequest = new LoginRequest(user.username(), user.password());
 
         LoginService loginService = new LoginService(loginRequest);
+
         LoginResult result = loginService.login();
 
         if (result.success()) {
-            sendSuccessResponse(exchange, result);
+            res.status(200);
+            res.body(gson.toJson(new AuthData(result.username(), result.authToken())));
         } else {
-            sendErrorResponse(exchange, 401, result.message());
+            if (result.message()=="Error: Unauthorized") {
+                res.status(401);
+                res.body("{ \"message\": \"Error: unauthorized\" } ");
+            } else {
+                res.status(500);
+                StringBuilder sb = new StringBuilder();
+                sb.append("{ \"message\": \"Error: ");
+                sb.append(result.message());
+                sb.append("\" } ");
+                res.body(sb.toString());
+            }
         }
+
+        return "";
     }
 
-    private void sendSuccessResponse(HttpExchange exchange, LoginResult result) throws IOException {
-        Gson gson = new Gson();
-        String jsonResponse = gson.toJson(result);
-
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-        exchange.sendResponseHeaders(200, jsonResponse.getBytes().length);
-
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(jsonResponse.getBytes());
-        }
-    }
-
-    private void sendErrorResponse(HttpExchange exchange, int statusCode, String message) throws IOException {
-        Gson gson = new Gson();
-        JsonObject errorResponse = new JsonObject();
-        errorResponse.addProperty("message", message);
-
-        String jsonResponse = gson.toJson(errorResponse);
-
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-        exchange.sendResponseHeaders(statusCode, jsonResponse.getBytes().length);
-
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(jsonResponse.getBytes());
-        }
-    }
 }

@@ -31,7 +31,7 @@ public class LoginService {
     public LoginResult login() {
         try {
             if(!userDAO.usernameExists(request.username())) {
-                return new LoginResult(false, null, null, "Error: User does nto exist!n");
+                return new LoginResult(false, null, null, "Error: User does not exist!");
             }
 
             UserData existingUser = userDAO.getUser(request.username());
@@ -52,13 +52,3 @@ public class LoginService {
     }
 
 }
-
-
-
-/*
-    Find the user in the userDAO
-    Make a new authotken if they exist
-    Store the authtoken in the DAO
-    Return the authtoken in the result
-
- */
