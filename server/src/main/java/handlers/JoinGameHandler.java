@@ -1,65 +1,72 @@
 package handlers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.sun.net.httpserver.HttpExchange;
-import results.JoinGameResult;
 import request.JoinGameRequest;
+import results.JoinGameResult;
 import service.JoinGameService;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
-
+import spark.Request;
+import spark.Response;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 
 public class JoinGameHandler {
 
-    private final UserDAO userDAO;
-    private final AuthDAO authDAO;
-    private final GameDAO gameDAO;
+    private static AuthDAO authDAO;
+    private static GameDAO gameDAO;
+    private static UserDAO userDAO;
 
-    public JoinGameHandler(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
-        this.userDAO = userDAO;
+    public JoinGameHandler(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
+        this.userDAO = userDAO;
     }
 
-    public void processRequest(HttpExchange exchange) throws IOException {
-        String method = exchange.getRequestMethod();
+    public static Object processRequest(Request req, Response res) throws IOException {
+        String authToken = req.attributes().toArray()[0].toString();
 
-        if (!method.equals("POST")) {
-            sendResponse(exchange, new JoinGameResult(false, "Error: Only POST requests are allowed"));
-            return;
+        if (authToken == null || authToken.isEmpty()) {
+            res.status(401);
+            res.body("{ \"message\": \"Error: unauthorized\" } ");
+            return "";
         }
 
-        InputStreamReader reader = new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8);
         Gson gson = new Gson();
-        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        JoinGameRequest joinGameRequest = gson.fromJson(req.body(), JoinGameRequest.class);
 
-        String authToken = json.get("authToken").getAsString();
-        String playerColor = json.get("playerColor").getAsString();
-        String gameID = json.get("gameID").getAsString();
+        if (joinGameRequest.playerColor() == null || joinGameRequest.gameID() == null) {
+            res.status(400);
+            res.body("{ \"message\": \"Error: bad request\" } ");
+            return "";
+        }
 
-        JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, playerColor, gameID);
+        // Add the authToken to the request
+        joinGameRequest = new JoinGameRequest(authToken, joinGameRequest.playerColor(), joinGameRequest.gameID());
 
         JoinGameService joinGameService = new JoinGameService(joinGameRequest, userDAO, authDAO, gameDAO);
-
         JoinGameResult result = joinGameService.joinGame();
 
-        sendResponse(exchange, result);
-    }
-
-    private void sendResponse(HttpExchange exchange, JoinGameResult result) throws IOException {
-        Gson gson = new Gson();
-        String jsonResponse = gson.toJson(result);
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-        exchange.sendResponseHeaders(result.success() ? 200 : 400, jsonResponse.getBytes().length);
-
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(jsonResponse.getBytes());
+        if (result.success()) {
+            res.status(200);
+            res.body("{}");
+        } else {
+            if (result.message().equals("Error: unauthorized")) {
+                res.status(401);
+                res.body("{ \"message\": \"Error: unauthorized\" } ");
+            } else if (result.message().equals("Error: Player color already taken or invalid.")) {
+                res.status(403);
+                res.body("{ \"message\": \"Error: already taken\" } ");
+            } else {
+                res.status(500);
+                StringBuilder sb = new StringBuilder();
+                sb.append("{ \"message\": \"Error: ");
+                sb.append(result.message());
+                sb.append("\" } ");
+                res.body(sb.toString());
+            }
         }
+
+        return "";
     }
 }

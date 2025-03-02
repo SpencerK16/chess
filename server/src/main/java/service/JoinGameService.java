@@ -45,7 +45,7 @@ public class JoinGameService {
     private String validateAuthToken(String authToken) throws Exception {
         String user = authDAO.getUser(authToken);
         if(!Objects.equals(user, "")) return user;
-        throw new Exception("Invalid or expired auth token.");
+        throw new Exception("Error: unauthorized");
     }
 
     private boolean addPlayerToGame(GameData game, String username, String playerColor) {

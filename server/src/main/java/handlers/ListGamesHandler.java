@@ -27,13 +27,12 @@ public class ListGamesHandler {
             res.body("{ \"message\": \"Error: unauthorized\" } ");
             return "";
         }
+
         ListGamesResult result = listGamesService.listGames();
-
-
 
         if (result.success()) {
             res.status(200);
-            res.body(gson.toJson(result.games()));
+            res.body("{ \"games\": " + gson.toJson(result.games()) + "}");
         } else {
             res.status(500);
             StringBuilder sb = new StringBuilder();

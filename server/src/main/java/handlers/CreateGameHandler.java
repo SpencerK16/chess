@@ -1,64 +1,56 @@
 package handlers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.sun.net.httpserver.HttpExchange;
 import request.CreateGameRequest;
 import results.CreateGameResult;
 import service.CreateGameService;
 import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
-
+import spark.Request;
+import spark.Response;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 
 public class CreateGameHandler {
 
-    private final UserDAO userDAO;
     private final AuthDAO authDAO;
-    private final GameDAO gameDAO;
+    private static CreateGameService createGameService = null;
 
-    public CreateGameHandler(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO) {
-        this.userDAO = userDAO;
+    public CreateGameHandler(AuthDAO authDAO, CreateGameService createGameService) {
         this.authDAO = authDAO;
-        this.gameDAO = gameDAO;
+        this.createGameService = createGameService;
     }
 
-    public void processRequest(HttpExchange exchange) throws IOException {
-        String method = exchange.getRequestMethod();
-        if (!method.equals("POST")) {
-            sendResponse(exchange, new CreateGameResult(false, null, "Error: Only POST requests are allowed"));
-            return;
+    public static Object processRequest(Request req, Response res) throws IOException {
+        String authToken = req.attributes().toArray()[0].toString();
+
+        if (authToken == null || authToken.isEmpty()) {
+            res.status(401);
+            res.body("{ \"message\": \"Error: unauthorized\" } ");
+            return "";
         }
 
-        InputStreamReader reader = new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8);
         Gson gson = new Gson();
-        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        CreateGameRequest createGameRequest = new CreateGameRequest(authToken, req.queryParams("gameName"));
 
-        String authToken = json.get("authToken").getAsString();
-        String gameName = json.get("gameName").getAsString();
-
-        CreateGameRequest createGameRequest = new CreateGameRequest(authToken, gameName);
-        CreateGameService createGameService = new CreateGameService(createGameRequest, userDAO, authDAO, gameDAO);
+        if (createGameRequest.gameName() == null || createGameRequest.gameName().isEmpty()) {
+            res.status(400);
+            res.body("{ \"message\": \"Error: bad request\" } ");
+            return "";
+        }
 
         CreateGameResult result = createGameService.createGame();
 
-        sendResponse(exchange, result);
-    }
-
-    private void sendResponse(HttpExchange exchange, CreateGameResult result) throws IOException {
-        Gson gson = new Gson();
-        String jsonResponse = gson.toJson(result);
-
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-        int responseCode = result.success() ? 200 : 400;
-        exchange.sendResponseHeaders(responseCode, jsonResponse.getBytes().length);
-
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(jsonResponse.getBytes());
+        if (result.success()) {
+            res.status(200);
+            res.body(gson.toJson(result));
+        } else {
+            res.status(500);
+            StringBuilder sb = new StringBuilder();
+            sb.append("{ \"message\": \"Error: ");
+            sb.append(result.message());
+            sb.append("\" } ");
+            res.body(sb.toString());
         }
+
+        return "";
     }
 }
