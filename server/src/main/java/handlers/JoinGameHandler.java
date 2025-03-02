@@ -59,14 +59,10 @@ public class JoinGameHandler {
                 res.body("{ \"message\": \"Error: already taken\" } ");
             } else {
                 res.status(500);
-                StringBuilder sb = new StringBuilder();
-                sb.append("{ \"message\": \"Error: ");
-                sb.append(result.message());
-                sb.append("\" } ");
-                res.body(sb.toString());
+                res.body("{ \"message\": \"Error: " + result.message().replace("\"", "\\\"") + "\" }");
             }
         }
 
-        return "";
+        return res.body();
     }
 }

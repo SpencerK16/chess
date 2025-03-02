@@ -10,11 +10,13 @@ import java.io.IOException;
 
 public class LogoutHandler {
 
-    private static AuthDAO authDAO = null;
+    private static final AuthDAO authDAO;
 
-    public LogoutHandler(AuthDAO authDAO) {
-        this.authDAO = authDAO;
+    static {
+        authDAO = new AuthDAO();
     }
+
+
 
     public static Object processRequest(Request req, Response res) throws IOException {
         String authToken = req.headers("authorization");
@@ -38,14 +40,10 @@ public class LogoutHandler {
                 res.body("{ \"message\": \"Error: unauthorized\" } ");
             } else {
                 res.status(500);
-                StringBuilder sb = new StringBuilder();
-                sb.append("{ \"message\": \"Error: ");
-                sb.append(result.message());
-                sb.append("\" } ");
-                res.body(sb.toString());
+                res.body("{ \"message\": \"Error: " + result.message().replace("\"", "\\\"") + "\" }");
             }
         }
 
-        return "";
+        return res.body();
     }
 }

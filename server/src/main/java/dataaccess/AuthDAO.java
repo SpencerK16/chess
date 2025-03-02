@@ -23,7 +23,7 @@ public class AuthDAO {
     // Read AuthData based on username
     public AuthData getAuth(String authtoken) throws DataAccessException {
         for(AuthData a : DataStore.authTokens.values()) {
-            if(a.authToken() == authtoken) return a;
+            if(Objects.equals(a.authToken(), authtoken)) return a;
         }
 
         throw new DataAccessException("AuthToken doesn't exist.");

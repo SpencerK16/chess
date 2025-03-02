@@ -80,6 +80,6 @@ public class JoinGameTest {
         JoinGameResult result = service.joinGame();
 
         assertFalse(result.success());
-        assertEquals("Error: Invalid or expired auth token.", result.message());
+        assertEquals("Error: unauthorized", result.message());
     }
 }

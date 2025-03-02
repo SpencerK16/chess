@@ -17,11 +17,12 @@ public class ClearHandler {
 
         if(result.success()) {
             res.status(200);
+            res.body("");
         } else {
             res.status(500);
             res.body(new Gson().toJson(result.message()));
         }
 
-        return "";
+        return res.body();
     }
 }

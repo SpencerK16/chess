@@ -36,20 +36,16 @@ public class LoginHandler {
             res.status(200);
             res.body(gson.toJson(new AuthData(result.username(), result.authToken())));
         } else {
-            if (result.message()=="Error: Unauthorized") {
+            if (result.message()=="Error: User does not exist!" || result.message() == "Error: Unauthorized") {
                 res.status(401);
                 res.body("{ \"message\": \"Error: unauthorized\" } ");
             } else {
                 res.status(500);
-                StringBuilder sb = new StringBuilder();
-                sb.append("{ \"message\": \"Error: ");
-                sb.append(result.message());
-                sb.append("\" } ");
-                res.body(sb.toString());
+                res.body("{ \"message\": \"Error: " + result.message().replace("\"", "\\\"") + "\" }");
             }
         }
 
-        return "";
+        return res.body();
     }
 
 }

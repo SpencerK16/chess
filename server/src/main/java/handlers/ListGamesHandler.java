@@ -22,12 +22,6 @@ public class ListGamesHandler {
         Gson gson = new Gson();
         String authToken = req.attributes().toArray()[0].toString();
 
-        if (authToken == null || authToken.isEmpty()) {
-            res.status(401);
-            res.body("{ \"message\": \"Error: unauthorized\" } ");
-            return "";
-        }
-
         ListGamesResult result = listGamesService.listGames();
 
         if (result.success()) {
@@ -35,13 +29,9 @@ public class ListGamesHandler {
             res.body("{ \"games\": " + gson.toJson(result.games()) + "}");
         } else {
             res.status(500);
-            StringBuilder sb = new StringBuilder();
-            sb.append("{ \"message\": \"Error: ");
-            sb.append(result.message());
-            sb.append("\" } ");
-            res.body(sb.toString());
+            return "{ \"message\": \"Error: " + result.message().replace("\"", "\\\"") + "\" }";
         }
 
-        return "";
+        return res.body();
     }
 }

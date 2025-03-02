@@ -29,7 +29,6 @@ public class RegisterHandler {
 
         UserData newUser = gson.fromJson(req.body(), UserData.class);
 
-
         RegisterRequest registerRequest = new RegisterRequest(newUser.username(), newUser.password(), newUser.email());
 
         RegisterService registerService = new RegisterService(registerRequest);
@@ -40,7 +39,7 @@ public class RegisterHandler {
             res.status(200);
             res.body(gson.toJson(new AuthData(result.username(), result.authToken())));
         } else {
-            if(result.message() == "Error: Password too short") {
+            if(result.message() == "Error: Password too short" || result.message().contains("null")) {
                 res.status(400);
                 res.body("{ \"message\": \"Error: bad request\" } ");
             }
@@ -50,14 +49,10 @@ public class RegisterHandler {
             }
             else {
                 res.status(500);
-                StringBuilder sb = new StringBuilder();
-                sb.append("{ \"message\": Error:");
-                sb.append(result.message());
-                sb.append(" \" } ");
-                res.body(sb.toString());
+                res.body("{ \"message\": \"Error: " + result.message().replace("\"", "\\\"") + "\" }");
             }
         }
 
-        return "";
+        return res.body();
     }
 }
