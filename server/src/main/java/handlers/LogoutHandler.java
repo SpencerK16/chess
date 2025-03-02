@@ -1,75 +1,51 @@
 package handlers;
 
-import com.google.gson.Gson;
-import com.sun.net.httpserver.HttpExchange;
-import results.LogoutResult;
-import request.LogoutRequest;
-import service.LogoutService;
 import dataaccess.AuthDAO;
+import request.LogoutRequest;
+import results.LogoutResult;
+import service.LogoutService;
+import spark.Request;
+import spark.Response;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 
 public class LogoutHandler {
 
-    private final AuthDAO authDAO;
+    private static AuthDAO authDAO = null;
 
-    // Constructor to initialize the AuthDAO
     public LogoutHandler(AuthDAO authDAO) {
         this.authDAO = authDAO;
     }
 
-    // Process the logout request
-    public void processRequest(HttpExchange exchange) throws IOException {
-        String method = exchange.getRequestMethod();
+    public static Object processRequest(Request req, Response res) throws IOException {
+        String authToken = req.headers("authorization");
 
-        // Validate that the request method is POST
-        if (!method.equals("POST")) {
-            sendErrorResponse(exchange, 405, "Error: Only POST requests are allowed");
-            return;
+        if (authToken == null || authToken.isEmpty()) {
+            res.status(401);
+            res.body("{ \"message\": \"Error: unauthorized\" } ");
+            return "";
         }
 
-        // Parse the request body into a LogoutRequest object
-        InputStreamReader reader = new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8);
-        Gson gson = new Gson();
-        LogoutRequest logoutRequest = gson.fromJson(reader, LogoutRequest.class);
-
-        // Call the LogoutService
+        LogoutRequest logoutRequest = new LogoutRequest(authToken);
         LogoutService logoutService = new LogoutService(logoutRequest, authDAO);
         LogoutResult result = logoutService.logout();
 
-        // Send the response based on the result
         if (result.success()) {
-            sendSuccessResponse(exchange, result);
+            res.status(200);
+            res.body("{}");
         } else {
-            sendErrorResponse(exchange, 401, result.message());
+            if (result.message().equals("Error: unauthorized")) {
+                res.status(401);
+                res.body("{ \"message\": \"Error: unauthorized\" } ");
+            } else {
+                res.status(500);
+                StringBuilder sb = new StringBuilder();
+                sb.append("{ \"message\": \"Error: ");
+                sb.append(result.message());
+                sb.append("\" } ");
+                res.body(sb.toString());
+            }
         }
-    }
 
-    // Send a successful response with the LogoutResult in JSON format
-    private void sendSuccessResponse(HttpExchange exchange, LogoutResult result) throws IOException {
-        Gson gson = new Gson();
-        String jsonResponse = gson.toJson(result);
-
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-        exchange.sendResponseHeaders(200, jsonResponse.getBytes().length);
-
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(jsonResponse.getBytes());
-        }
-    }
-
-    // Send an error response with the given status code and message
-    private void sendErrorResponse(HttpExchange exchange, int statusCode, String message) throws IOException {
-        Gson gson = new Gson();
-        String jsonResponse = gson.toJson(new LogoutResult(false, message));
-
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-        exchange.sendResponseHeaders(statusCode, jsonResponse.getBytes().length);
-
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(jsonResponse.getBytes());
-        }
+        return "";
     }
 }

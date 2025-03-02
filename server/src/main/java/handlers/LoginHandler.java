@@ -1,8 +1,6 @@
 package handlers;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.sun.net.httpserver.HttpExchange;
 import model.AuthData;
 import model.UserData;
 import results.LoginResult;
@@ -12,12 +10,7 @@ import dataaccess.UserDAO;
 import dataaccess.AuthDAO;
 import spark.Request;
 import spark.Response;
-
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-
 public class LoginHandler {
 
     private final UserDAO userDAO;
