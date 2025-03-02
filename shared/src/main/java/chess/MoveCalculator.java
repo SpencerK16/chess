@@ -71,4 +71,15 @@ public abstract class MoveCalculator {
         moves.add(new ChessMove(start, end, null)); // Normal move
         return true;
     }
+
+    protected void addValidMoves(ChessBoard board, ChessPosition start, ChessPosition end, Collection<ChessMove> moves) {
+        ChessPiece pieceAtEnd = board.getPiece(end);
+        if (pieceAtEnd != null) {
+            if (pieceAtEnd.getTeamColor() != board.getPiece(start).getTeamColor()) {
+                moves.add(new ChessMove(start, end, null)); // Capture move
+            }
+            return; //Blocked by piece
+        }
+        moves.add(new ChessMove(start, end, null)); // Normal move
+    }
 }

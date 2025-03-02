@@ -3,7 +3,7 @@ package chess;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class KingMoveCalculator implements PieceMovesCalculator {
+public class KingMoveCalculator extends MoveCalculator implements PieceMovesCalculator {
 
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
@@ -22,20 +22,9 @@ public class KingMoveCalculator implements PieceMovesCalculator {
             int newCol = position.getColumn() + colDirections[i];
             if (newRow >= 1 && newRow <= 8 && newCol >= 1 && newCol <= 8) {
                 ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                addMoveIfValid(board, position, newPosition, moves);
+                addValidMoves(board, position, newPosition, moves);
             }
         }
-    }
-
-    private void addMoveIfValid(ChessBoard board, ChessPosition start, ChessPosition end, Collection<ChessMove> moves) {
-        ChessPiece pieceAtEnd = board.getPiece(end);
-        if (pieceAtEnd != null) {
-            if (pieceAtEnd.getTeamColor() != board.getPiece(start).getTeamColor()) {
-                moves.add(new ChessMove(start, end, null)); // Capture move
-            }
-            return; //Blocked by piece
-        }
-        moves.add(new ChessMove(start, end, null)); // Normal move
     }
 }
 
