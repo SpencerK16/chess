@@ -11,7 +11,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import service.CreateGameService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,10 +47,10 @@ public class CreateGameTest {
             CreateGameResult result = service.createGame();
 
             assertTrue(result.success());
-            assertNotNull(result.GameID());
+            assertNotNull(result.gameID());
             assertEquals("Game created successfully", result.message());
 
-            GameData game = gameDAO.getGame(Integer.parseInt(result.GameID()));
+            GameData game = gameDAO.getGame(Integer.parseInt(result.gameID()));
             assertNotNull(game);
             assertEquals("Chess Game", game.gameName());
         } catch (DataAccessException e) {

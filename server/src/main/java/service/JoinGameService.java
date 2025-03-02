@@ -44,7 +44,9 @@ public class JoinGameService {
 
     private String validateAuthToken(String authToken) throws Exception {
         String user = authDAO.getUser(authToken);
-        if(!Objects.equals(user, "")) return user;
+        if(!Objects.equals(user, "")) {
+            return user;
+        }
         throw new Exception("Error: unauthorized");
     }
 

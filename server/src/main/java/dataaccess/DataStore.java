@@ -8,13 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DataStore {
-    static final Map<String, UserData> users;
-    static final Map<Integer, GameData> games;
-    static final Map<String, AuthData> authTokens;
+    static final Map<String, UserData> USERS;
+    static final Map<Integer, GameData> GAMES;
+    static final Map<String, AuthData> AUTHTOKENS;
 
     static {
-        users = new HashMap<>();
-        games = new HashMap<>();
-        authTokens = new HashMap<>();
+        USERS = new HashMap<>();
+        GAMES = new HashMap<>();
+        AUTHTOKENS = new HashMap<>();
     }
 }

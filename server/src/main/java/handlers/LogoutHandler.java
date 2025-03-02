@@ -10,10 +10,10 @@ import java.io.IOException;
 
 public class LogoutHandler {
 
-    private static final AuthDAO authDAO;
+    private static final AuthDAO AUTH_DAO;
 
     static {
-        authDAO = new AuthDAO();
+        AUTH_DAO = new AuthDAO();
     }
 
 
@@ -22,7 +22,7 @@ public class LogoutHandler {
         String authToken = req.headers("authorization");
 
         LogoutRequest logoutRequest = new LogoutRequest(authToken);
-        LogoutService logoutService = new LogoutService(logoutRequest, authDAO);
+        LogoutService logoutService = new LogoutService(logoutRequest, AUTH_DAO);
         LogoutResult result = logoutService.logout();
 
         if (authToken == null || authToken.isEmpty()) {
