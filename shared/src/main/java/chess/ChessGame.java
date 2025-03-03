@@ -159,6 +159,11 @@ public class ChessGame {
         if (!isInCheck(teamColor)) {
             return false;
         }
+
+        return checkmateChecker(teamColor);
+    }
+
+    private boolean checkmateChecker(TeamColor teamColor) {
         List<ChessPosition> myPos = board.getPositions().stream().toList();
         for (ChessPosition position : myPos) {
             ChessPiece piece = board.getPiece(position);
@@ -183,17 +188,8 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             return false;
         }
-        List<ChessPosition> myPos = board.getPositions().stream().toList();
-        for (ChessPosition position : myPos) {
-            ChessPiece piece = board.getPiece(position);
-            if (piece != null && piece.getTeamColor() == teamColor) {
-                Collection<ChessMove> moves = validMoves(position);
-                if (!moves.isEmpty()) {
-                    return false;
-                }
-            }
-        }
-        return true;
+
+        return checkmateChecker(teamColor);
     }
 
     /**

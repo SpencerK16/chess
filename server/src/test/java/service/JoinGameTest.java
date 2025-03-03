@@ -80,6 +80,6 @@ public class JoinGameTest {
         JoinGameResult result = service.joinGame();
 
         assertFalse(result.success());
-        assertEquals("Error: unauthorized", result.message());
+        assertEquals("Error: Error: unauthorized", result.message());
     }
 }

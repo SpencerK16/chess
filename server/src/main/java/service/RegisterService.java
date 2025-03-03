@@ -38,7 +38,7 @@ public class RegisterService {
             String authToken = UUID.randomUUID().toString();
 
 
-            AuthData authData = new AuthData(authToken, request.username());
+            AuthData authData = new AuthData(request.username(), authToken);
             authDAO.insertAuth(authData);
 
             return new RegisterResult(true, request.username(), authToken, "Registration successful");

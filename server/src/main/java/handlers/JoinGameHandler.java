@@ -24,7 +24,7 @@ public class JoinGameHandler {
     }
 
     public static Object processRequest(Request req, Response res) throws IOException {
-        String authToken = req.attributes().toArray()[0].toString();
+        String authToken = req.headers("authtoken");
 
         if (authToken == null || authToken.isEmpty()) {
             res.status(401);

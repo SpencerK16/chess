@@ -1,6 +1,8 @@
 package handlers;
 
 import com.google.gson.Gson;
+import dataaccess.GameDAO;
+import request.ListGamesRequest;
 import results.ListGamesResult;
 import service.ListGamesService;
 import dataaccess.AuthDAO;
@@ -9,20 +11,13 @@ import spark.Response;
 import java.io.IOException;
 
 public class ListGamesHandler {
-
-    private final AuthDAO authDAO;
-    private static ListGamesService listGamesService = null;
-
-    public ListGamesHandler(AuthDAO authDAO, ListGamesService listGamesService) {
-        this.authDAO = authDAO;
-        this.listGamesService = listGamesService;
-    }
-
     public static Object processRequest(Request req, Response res) throws IOException {
         Gson gson = new Gson();
-        String authToken = req.attributes().toArray()[0].toString();
+        String authToken = req.headers("authtoken");
 
-        ListGamesResult result = listGamesService.listGames();
+        ListGamesRequest request = new ListGamesRequest(authToken);
+
+        ListGamesResult result = new ListGamesService(request, new AuthDAO(), new GameDAO()).listGames();
 
         if (result.success()) {
             res.status(200);

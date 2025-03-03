@@ -7,6 +7,7 @@ import service.LogoutService;
 import spark.Request;
 import spark.Response;
 import java.io.IOException;
+import java.util.Objects;
 
 public class LogoutHandler {
 
@@ -21,14 +22,16 @@ public class LogoutHandler {
     public static Object processRequest(Request req, Response res) throws IOException {
         String authToken = req.headers("authorization");
 
+
+
         LogoutRequest logoutRequest = new LogoutRequest(authToken);
         LogoutService logoutService = new LogoutService(logoutRequest, AUTH_DAO);
         LogoutResult result = logoutService.logout();
 
-        if (authToken == null || authToken.isEmpty()) {
+        if (authToken == null || authToken.isEmpty() || Objects.equals(result.message(), "Error: AuthToken doesn't exist.")) {
             res.status(401);
             res.body("{ \"message\": \"Error: unauthorized\" } ");
-            return "";
+            return res.body();
         }
 
         if (result.success()) {
