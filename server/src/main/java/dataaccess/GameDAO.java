@@ -9,14 +9,6 @@ public class GameDAO {
     public GameDAO(){
     }
 
-    public List<String> getUserGames(String user) {
-        List<String> toReturn = new LinkedList<>();
-        for(Map.Entry<Integer, GameData> e : DataStore.GAMES.entrySet()) {
-           toReturn.add(Integer.toString(e.getValue().gameID()));
-        }
-
-        return toReturn;
-    }
 
     public void insertGame(GameData gameData) throws DataAccessException {
         if (DataStore.GAMES.containsKey(gameData.gameID())) {
@@ -33,15 +25,6 @@ public class GameDAO {
         throw new DataAccessException("Game with this ID doesn't exist.");
     }
 
-//    // Update existing game
-//    public void updateGame(GameData gameData) throws DataAccessException {
-//        if (DataStore.GAMES.containsKey(gameData.gameID())) {
-//            DataStore.GAMES.put(gameData.gameID(), gameData);
-//        }
-//        throw new DataAccessException("User doesn't exist.");
-//    }
-//
-    // Delete Game based on gameID
     public void deleteGame(int gameID) {
         if (DataStore.GAMES.containsKey(gameID)) {
             DataStore.GAMES.remove(gameID);

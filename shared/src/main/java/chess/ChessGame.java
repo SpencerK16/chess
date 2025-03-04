@@ -208,10 +208,10 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         ChessBoard copyboard = new ChessBoard();
-        for (ChessPosition current_positions : board.getPositions())
+        for (ChessPosition currentPositions : board.getPositions())
         {
-            if (board.getPiece(current_positions) != null){
-                copyboard.addPiece(current_positions, board.getPiece(current_positions));
+            if (board.getPiece(currentPositions) != null){
+                copyboard.addPiece(currentPositions, board.getPiece(currentPositions));
             }
         }
         return copyboard;

@@ -35,15 +35,6 @@ public class AuthDAO {
         return null;
     }
 
-    // Update AuthData
-//    public void updateAuth(AuthData authData) throws DataAccessException {
-//        if (DataStore.AUTHTOKENS.containsKey(authData.username())) {
-//            DataStore.AUTHTOKENS.put(authData.username(), authData);
-//        }
-//        throw new DataAccessException("User doesn't exist.");
-//    }
-
-    // Delete AuthData based on Username
     public void deleteAuth(String authtoken) throws DataAccessException {
         if (DataStore.AUTHTOKENS.containsKey(authtoken)) {
             DataStore.AUTHTOKENS.remove(authtoken);

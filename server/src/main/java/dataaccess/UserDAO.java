@@ -28,24 +28,6 @@ public class UserDAO {
         return DataStore.USERS.containsKey(username);
     }
 
-    //Update information already in user
-//    public void updateUser(UserData user) throws DataAccessException{
-//        //Get new string and convert it to needed change
-//        if (DataStore.USERS.containsKey(user.username())) {
-//            DataStore.USERS.put(user.username(), user);
-//        }
-//        throw new DataAccessException("User doesn't exist.");
-//    }
-
-//    //Deletes a user
-//    public void deleteUser(String username) throws DataAccessException{
-//        //Pick which uses should be deleted and then deletes it
-//        if (DataStore.USERS.containsKey(username)) {
-//            DataStore.USERS.remove(username);
-//        }
-//        throw new DataAccessException("User doesn't exist.");
-//    }
-
     public void clear() throws DataAccessException {
         DataStore.USERS.clear();
     }
