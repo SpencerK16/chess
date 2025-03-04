@@ -27,7 +27,7 @@ public class RegisterService {
             if(userDAO.usernameExists(request.username())) {
                 return new RegisterResult(false, null, null, "Error: Username already taken");
             }
-            if (request.password().length() < 6) {
+            if (request.password().isEmpty()) {
                 return new RegisterResult(false, null, null, "Error: Password too short");
             }
 
