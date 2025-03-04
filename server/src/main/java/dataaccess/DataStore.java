@@ -10,7 +10,7 @@ import java.util.Map;
 public class DataStore {
     static final Map<String, UserData> USERS;
     static final Map<Integer, GameData> GAMES;
-    static final Map<String, AuthData> AUTHTOKENS;
+    static final Map<String, String> AUTHTOKENS;
 
     static {
         USERS = new HashMap<>();

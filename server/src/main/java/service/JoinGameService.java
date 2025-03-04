@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.GameData;
@@ -44,7 +45,7 @@ public class JoinGameService {
 
     private String validateAuthToken(String authToken) throws Exception {
         String user = authDAO.getUser(authToken);
-        if(!Objects.equals(user, "")) {
+        if(user != null) {
             return user;
         }
         throw new Exception("Error: unauthorized");
@@ -52,10 +53,20 @@ public class JoinGameService {
 
     private boolean addPlayerToGame(GameData game, String username, String playerColor) {
         if (playerColor.equalsIgnoreCase("white") && game.whiteUsername() == null) {
-            game = game.withWhiteUsername(username);
+            new GameDAO().deleteGame(game.gameID());
+            try {
+                new GameDAO().insertGame(game.withWhiteUsername(username));
+            } catch (DataAccessException e) {
+                return false;
+            }
             return true;
         } else if (playerColor.equalsIgnoreCase("black") && game.blackUsername() == null) {
-            game = game.withWhiteUsername(username);
+            new GameDAO().deleteGame(game.gameID());
+            try {
+                new GameDAO().insertGame(game.withBlackUsername(username));
+            } catch (DataAccessException e) {
+                return false;
+            }
             return true;
         }
         return false;

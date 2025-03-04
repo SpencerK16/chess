@@ -19,7 +19,7 @@ public class ClearHandler {
             res.status(200);
             res.body("");
         } else {
-            res.status(500);
+            res.status(401);
             res.body(new Gson().toJson(result.message()));
         }
 

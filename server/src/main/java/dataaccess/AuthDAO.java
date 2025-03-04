@@ -12,31 +12,27 @@ public class AuthDAO {
     }
 
     public void insertAuth(AuthData authData) throws DataAccessException {
-        if (DataStore.AUTHTOKENS.containsKey(authData.username())) {
-            DataStore.AUTHTOKENS.remove(authData.username());
-        }
-        DataStore.AUTHTOKENS.put(authData.username(), authData);
+        DataStore.AUTHTOKENS.put(authData.authToken(), authData.username());
     }
 
     // Read AuthData based on username
     public AuthData getAuth(String authtoken) throws DataAccessException {
-        for(AuthData a : DataStore.AUTHTOKENS.values()) {
-            if(Objects.equals(a.authToken(), authtoken)){
-                return a;
-            }
+        if(DataStore.AUTHTOKENS.containsKey(authtoken)) {
+            return new AuthData(DataStore.AUTHTOKENS.get(authtoken), authtoken);
         }
 
         throw new DataAccessException("AuthToken doesn't exist.");
     }
 
     public String getUser(String authData) {
-        for(Map.Entry<String, AuthData> e : DataStore.AUTHTOKENS.entrySet()) {
-            if(Objects.equals(e.getValue().authToken(), authData)) {
-                return e.getKey();
-            }
+        for(Map.Entry<String, String> e : DataStore.AUTHTOKENS.entrySet()) {
+            e.getKey();
+        }
+        if(DataStore.AUTHTOKENS.containsKey(authData)) {
+            return DataStore.AUTHTOKENS.get(authData);
         }
 
-        return "";
+        return null;
     }
 
     // Update AuthData
@@ -48,9 +44,9 @@ public class AuthDAO {
 //    }
 
     // Delete AuthData based on Username
-    public void deleteAuth(String username) throws DataAccessException {
-        if (DataStore.AUTHTOKENS.containsKey(username)) {
-            DataStore.AUTHTOKENS.remove(username);
+    public void deleteAuth(String authtoken) throws DataAccessException {
+        if (DataStore.AUTHTOKENS.containsKey(authtoken)) {
+            DataStore.AUTHTOKENS.remove(authtoken);
             return;
         }
         throw new DataAccessException("User doesn't exist.");

@@ -28,7 +28,7 @@ public class LogoutService {
             }
 
             // Step 2: Remove the authToken from the DAO
-            authDAO.deleteAuth(token.username());
+            authDAO.deleteAuth(token.authToken());
 
             // Step 3: Return a success result
             return new LogoutResult(true, "Logout successful");

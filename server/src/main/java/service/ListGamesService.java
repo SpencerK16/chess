@@ -28,14 +28,8 @@ public class ListGamesService {
                 return new ListGamesResult(false, null, "Error: Unauthorized (Invalid authToken)");
             }
 
-            List<String> gameIDs = gameDAO.getUserGames(username); // This method should return a list of game IDs for the user
-
-            if (gameIDs.isEmpty()) {
-                return new ListGamesResult(false, null, "No games found for the user");
-            }
-
             // Step 4: Return a successful result with the games information
-            return new ListGamesResult(true,  gameDAO.getGamesById(gameIDs), "Games retrieved successfully");
+            return new ListGamesResult(true,  gameDAO.getGames(), "Games retrieved successfully");
 
         } catch (Exception e) {
             // If any exception occurs, return a failure result with the error message

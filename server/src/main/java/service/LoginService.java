@@ -41,7 +41,7 @@ public class LoginService {
             }
             String authToken = UUID.randomUUID().toString();
 
-            AuthData authData = new AuthData(authToken, request.username());
+            AuthData authData = new AuthData(request.username(), authToken);
             authDAO.insertAuth(authData);
 
             return new LoginResult(true, request.username(), authToken, "Login successful");

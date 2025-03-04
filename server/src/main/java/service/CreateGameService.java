@@ -36,7 +36,7 @@ public class CreateGameService {
 
             int gameID = new Random().nextInt(1000);
 
-            GameData newGame = new GameData(gameID, "", "",  request.gameName(), new ChessGame());
+            GameData newGame = new GameData(gameID, null, null,  request.gameName(), new ChessGame());
 
             gameDAO.insertGame(newGame);
 

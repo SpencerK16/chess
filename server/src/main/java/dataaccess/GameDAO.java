@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.GameData;
+import model.GameListData;
 
 import java.util.*;
 
@@ -11,9 +12,7 @@ public class GameDAO {
     public List<String> getUserGames(String user) {
         List<String> toReturn = new LinkedList<>();
         for(Map.Entry<Integer, GameData> e : DataStore.GAMES.entrySet()) {
-            if(Objects.equals(e.getValue().whiteUsername(), user) || Objects.equals(e.getValue().blackUsername(), user)) {
-                toReturn.add(Integer.toString(e.getValue().gameID()));
-            }
+           toReturn.add(Integer.toString(e.getValue().gameID()));
         }
 
         return toReturn;
@@ -42,26 +41,26 @@ public class GameDAO {
 //        throw new DataAccessException("User doesn't exist.");
 //    }
 //
-//    // Delete Game based on gameID
-//    public void deleteGame(int gameID) throws DataAccessException {
-//        if (DataStore.GAMES.containsKey(gameID)) {
-//            DataStore.GAMES.remove(gameID);
-//        }
-//        throw new DataAccessException("Game with this ID doesn't exist.");
-//
-//    }
+    // Delete Game based on gameID
+    public void deleteGame(int gameID) {
+        if (DataStore.GAMES.containsKey(gameID)) {
+            DataStore.GAMES.remove(gameID);
+        }
+
+    }
 
     public void clear() throws DataAccessException {
         DataStore.GAMES.clear();
     }
 
-    public List<GameData> getGamesById(List<String> ids) {
-        List<GameData> toReturn = new LinkedList<>();
+    public List<GameListData> getGames() {
+        List<GameListData> toReturn = new LinkedList<>();
 
         for(GameData d : DataStore.GAMES.values()) {
-            if(ids.contains(Integer.toString(d.gameID()))) {
-                toReturn.add(d);
-            }
+            String wUser = d.whiteUsername();
+            String bUser = d.blackUsername();
+
+            toReturn.add(new GameListData(d.gameID(), d.whiteUsername(), d.blackUsername(), d.gameName()));
         }
 
         return toReturn;

@@ -10,21 +10,11 @@ import dataaccess.UserDAO;
 import spark.Request;
 import spark.Response;
 import java.io.IOException;
+import java.util.Objects;
 
 public class JoinGameHandler {
-
-    private static AuthDAO authDAO;
-    private static GameDAO gameDAO;
-    private static UserDAO userDAO;
-
-    public JoinGameHandler(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) {
-        this.authDAO = authDAO;
-        this.gameDAO = gameDAO;
-        this.userDAO = userDAO;
-    }
-
     public static Object processRequest(Request req, Response res) throws IOException {
-        String authToken = req.headers("authtoken");
+        String authToken = req.headers("authorization");
 
         if (authToken == null || authToken.isEmpty()) {
             res.status(401);
@@ -33,33 +23,37 @@ public class JoinGameHandler {
         }
 
         Gson gson = new Gson();
-        JoinGameRequest joinGameRequest = gson.fromJson(req.body(), JoinGameRequest.class);
+        JoinGameRequest iRequest = gson.fromJson(req.body(), JoinGameRequest.class);
+        JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, iRequest.playerColor(), iRequest.gameID());
 
-        if (joinGameRequest.playerColor() == null || joinGameRequest.gameID() == null) {
+        if(!(Objects.equals(joinGameRequest.playerColor(), "BLACK") || Objects.equals(joinGameRequest.playerColor(), "WHITE"))) {
             res.status(400);
             res.body("{ \"message\": \"Error: bad request\" } ");
-            return "";
+            return res.body();
         }
 
-        // Add the authToken to the request
-        joinGameRequest = new JoinGameRequest(authToken, joinGameRequest.playerColor(), joinGameRequest.gameID());
+        if (joinGameRequest.playerColor() == null || joinGameRequest.gameID() == null || joinGameRequest.playerColor().isEmpty()) {
+            res.status(400);
+            res.body("{ \"message\": \"Error: bad request\" } ");
+            return res.body();
+        }
 
-        JoinGameService joinGameService = new JoinGameService(joinGameRequest, userDAO, authDAO, gameDAO);
+        JoinGameService joinGameService = new JoinGameService(joinGameRequest, new UserDAO(), new AuthDAO(), new GameDAO());
         JoinGameResult result = joinGameService.joinGame();
 
         if (result.success()) {
             res.status(200);
             res.body("{}");
         } else {
-            if (result.message().equals("Error: unauthorized")) {
+            if (result.message().equals("Error: Error: unauthorized")) {
                 res.status(401);
-                res.body("{ \"message\": \"Error: unauthorized\" } ");
+                return "{ \"message\": \"Error: unauthorized\" }";
             } else if (result.message().equals("Error: Player color already taken or invalid.")) {
                 res.status(403);
-                res.body("{ \"message\": \"Error: already taken\" } ");
+                return "{ \"message\": \"Error: already taken\" }";
             } else {
                 res.status(500);
-                res.body("{ \"message\": \"Error: " + result.message().replace("\"", "\\\"") + "\" }");
+                return "{ \"message\": \"Error: " + result.message().replace("\"", "\\\"") + "\" }";
             }
         }
 

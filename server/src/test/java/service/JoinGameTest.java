@@ -45,7 +45,7 @@ public class JoinGameTest {
         JoinGameRequest request = new JoinGameRequest(authToken, playerColor, gameID);
 
         String username = "player1";
-        GameData game = new GameData(1, null, null, null, new ChessGame());
+        GameData game = new GameData(1, null, null, "gameName", new ChessGame());
 
         try {
             authDAO.insertAuth(new AuthData(username, authToken));
