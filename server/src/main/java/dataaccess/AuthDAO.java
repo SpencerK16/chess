@@ -3,7 +3,6 @@ package dataaccess;
 import model.AuthData;
 
 import java.util.Map;
-import java.util.Objects;
 
 public class AuthDAO {
 
