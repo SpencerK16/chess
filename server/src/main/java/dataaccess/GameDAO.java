@@ -40,9 +40,6 @@ public class GameDAO {
         List<GameListData> toReturn = new LinkedList<>();
 
         for(GameData d : DataStore.GAMES.values()) {
-            String wUser = d.whiteUsername();
-            String bUser = d.blackUsername();
-
             toReturn.add(new GameListData(d.gameID(), d.whiteUsername(), d.blackUsername(), d.gameName()));
         }
 
