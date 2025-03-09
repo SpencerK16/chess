@@ -44,7 +44,8 @@ public class SQLGameDAO {
                             rs.getString("whiteUsername"),
                             rs.getString("blackUsername"),
                             rs.getString("gameName"),
-                            //rs.getString("gameState") needs to be chessgame
+                            //rs.getString("gameState")
+                            //needs to be chessgame
                     );
                 } else {
                     throw new DataAccessException("Game with this ID doesn't exist.");
@@ -56,9 +57,26 @@ public class SQLGameDAO {
     }
 
     public void deleteGame(int gameID) throws DataAccessException {
+        String sql = "DELETE FROM games WHERE gameID = ?";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, gameID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error deleting game: " + e.getMessage());
+        }
     }
 
     public void clear() throws DataAccessException {
+        String sql = "DELETE FROM games";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error clearing games: " + e.getMessage());
+        }
     }
 
     public List<GameListData> getGames() throws DataAccessException {
