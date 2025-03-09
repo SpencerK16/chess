@@ -50,7 +50,17 @@ public class SQLUserDAO {
     }
 
     public boolean usernameExists(String username) throws DataAccessException {
+        String sql = "SELECT username FROM users WHERE username = ?";
 
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error checking username: " + e.getMessage());
+        }
     }
 
     public void clear() throws DataAccessException {
