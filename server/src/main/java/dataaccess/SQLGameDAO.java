@@ -31,6 +31,28 @@ public class SQLGameDAO {
 
     // Get Game by ID
     public GameData getGame(int gameID) throws DataAccessException {
+        String sql = "SELECT * FROM games WHERE gameID = ?";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, gameID);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new GameData(
+                            rs.getInt("gameID"),
+                            rs.getString("whiteUsername"),
+                            rs.getString("blackUsername"),
+                            rs.getString("gameName"),
+                            //rs.getString("gameState") needs to be chessgame
+                    );
+                } else {
+                    throw new DataAccessException("Game with this ID doesn't exist.");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error getting game: " + e.getMessage());
+        }
     }
 
     public void deleteGame(int gameID) throws DataAccessException {
