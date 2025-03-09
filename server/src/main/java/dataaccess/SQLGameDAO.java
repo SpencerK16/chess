@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
 import model.GameListData;
 
@@ -14,7 +15,7 @@ public class SQLGameDAO {
 
     // Insert Game
     public void insertGame(GameData gameData) throws DataAccessException {
-        String sql = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName, gameState) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -22,7 +23,7 @@ public class SQLGameDAO {
             stmt.setString(2, gameData.whiteUsername());
             stmt.setString(3, gameData.blackUsername());
             stmt.setString(4, gameData.gameName());
-            stmt.setString(5, gameData.gameState()); // Assuming the game state is serialized to JSON
+            stmt.setString(5, ChessGame); // Not sure what to do
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException("Error inserting game: " + e.getMessage());
@@ -44,7 +45,7 @@ public class SQLGameDAO {
                             rs.getString("whiteUsername"),
                             rs.getString("blackUsername"),
                             rs.getString("gameName"),
-                            //rs.getString("gameState")
+                            //rs.getString("game")
                             //needs to be chessgame
                     );
                 } else {
@@ -80,5 +81,24 @@ public class SQLGameDAO {
     }
 
     public List<GameListData> getGames() throws DataAccessException {
+        String sql = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games";
+        List<GameListData> toReturn = new LinkedList<>();
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                toReturn.add(new GameListData(
+                        rs.getInt("gameID"),
+                        rs.getString("whiteUsername"),
+                        rs.getString("blackUsername"),
+                        rs.getString("gameName")
+                ));
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error getting games: " + e.getMessage());
+        }
+
+        return toReturn;
     }
 }
