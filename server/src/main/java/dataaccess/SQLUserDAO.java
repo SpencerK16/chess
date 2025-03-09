@@ -28,7 +28,25 @@ public class SQLUserDAO {
     }
 
     public UserData getUser(String username) throws DataAccessException {
+        String sql = "SELECT * FROM users WHERE username = ?";
 
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new UserData(
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("email")
+                    );
+                } else {
+                    throw new DataAccessException("User doesn't exist.");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error getting user: " + e.getMessage());
+        }
     }
 
     public boolean usernameExists(String username) throws DataAccessException {
