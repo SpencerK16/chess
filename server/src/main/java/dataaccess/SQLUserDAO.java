@@ -64,6 +64,13 @@ public class SQLUserDAO {
     }
 
     public void clear() throws DataAccessException {
+        String sql = "DELETE FROM users";
 
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error clearing users: " + e.getMessage());
+        }
     }
 }
