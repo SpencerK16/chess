@@ -1,6 +1,7 @@
 package handlers;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import request.LogoutRequest;
 import results.LogoutResult;
 import service.LogoutService;
@@ -22,13 +23,11 @@ public class LogoutHandler {
     public static Object processRequest(Request req, Response res) throws IOException {
         String authToken = req.headers("authorization");
 
-
-
         LogoutRequest logoutRequest = new LogoutRequest(authToken);
         LogoutService logoutService = new LogoutService(logoutRequest, AUTH_DAO);
         LogoutResult result = logoutService.logout();
 
-        if (authToken == null || authToken.isEmpty() || Objects.equals(result.message(), "Error: AuthToken doesn't exist.")) {
+        if (authToken == null || authToken.isEmpty() || Objects.equals(result.message(), "Error: Error: Auth token doesn't exist.")) {
             res.status(401);
             res.body("{ \"message\": \"Error: unauthorized\" } ");
             return res.body();

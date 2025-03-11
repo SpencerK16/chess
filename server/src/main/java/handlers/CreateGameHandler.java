@@ -1,10 +1,10 @@
 package handlers;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.GameData;
-import model.UserData;
 import request.CreateGameRequest;
 import results.CreateGameResult;
 import service.CreateGameService;
@@ -27,6 +27,14 @@ public class CreateGameHandler {
             CreateGameRequest request = new CreateGameRequest(authToken, game.gameName());
 
             if (authToken == null || authToken.isEmpty()) {
+                res.status(401);
+                res.body("{ \"message\": \"Error: unauthorized\" } ");
+                return res.body();
+            }
+
+            try {
+                new AuthDAO().getAuth(authToken);
+            } catch (DataAccessException d) {
                 res.status(401);
                 res.body("{ \"message\": \"Error: unauthorized\" } ");
                 return res.body();

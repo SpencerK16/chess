@@ -1,6 +1,7 @@
 package handlers;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import request.JoinGameRequest;
 import results.JoinGameResult;
 import service.JoinGameService;
@@ -15,12 +16,18 @@ import java.util.Objects;
 public class JoinGameHandler {
     public static Object processRequest(Request req, Response res) throws IOException {
         String authToken = req.headers("authorization");
-
+    try {
         if (authToken == null || authToken.isEmpty()) {
             res.status(401);
             res.body("{ \"message\": \"Error: unauthorized\" } ");
-            return "";
+            return res.body();
         }
+        new AuthDAO().getAuth(authToken);
+    } catch (DataAccessException d) {
+        res.status(401);
+        res.body("{ \"message\": \"Error: unauthorized\" } ");
+        return res.body();
+    }
 
         Gson gson = new Gson();
         JoinGameRequest iRequest = gson.fromJson(req.body(), JoinGameRequest.class);

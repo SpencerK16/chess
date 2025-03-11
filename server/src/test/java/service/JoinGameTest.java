@@ -11,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import request.JoinGameRequest;
 import results.JoinGameResult;
-import service.JoinGameService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -80,6 +79,6 @@ public class JoinGameTest {
         JoinGameResult result = service.joinGame();
 
         assertFalse(result.success());
-        assertEquals("Error: Error: unauthorized", result.message());
+        assertEquals("Error: Auth token doesn't exist.", result.message());
     }
 }

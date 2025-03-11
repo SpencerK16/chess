@@ -71,6 +71,6 @@ public class LogoutTest {
         LogoutResult logoutResult = logoutService.logout();
 
         assertFalse(logoutResult.success());
-        assertEquals("Error: AuthToken doesn't exist.", logoutResult.message());
+        assertEquals("Error: Auth token doesn't exist.", logoutResult.message());
     }
 }

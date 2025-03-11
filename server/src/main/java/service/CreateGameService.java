@@ -10,7 +10,6 @@ import request.CreateGameRequest;
 import results.CreateGameResult;
 
 import java.util.Random;
-import java.util.UUID;
 
 public class CreateGameService {
 

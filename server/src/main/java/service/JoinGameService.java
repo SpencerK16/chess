@@ -8,8 +8,6 @@ import model.GameData;
 import results.JoinGameResult;
 import request.JoinGameRequest;
 
-import java.util.Objects;
-
 public class JoinGameService {
 
     private final JoinGameRequest request;
@@ -53,16 +51,16 @@ public class JoinGameService {
 
     private boolean addPlayerToGame(GameData game, String username, String playerColor) {
         if (playerColor.equalsIgnoreCase("white") && game.whiteUsername() == null) {
-            new GameDAO().deleteGame(game.gameID());
             try {
+                new GameDAO().deleteGame(game.gameID());
                 new GameDAO().insertGame(game.withWhiteUsername(username));
             } catch (DataAccessException e) {
                 return false;
             }
             return true;
         } else if (playerColor.equalsIgnoreCase("black") && game.blackUsername() == null) {
-            new GameDAO().deleteGame(game.gameID());
             try {
+                new GameDAO().deleteGame(game.gameID());
                 new GameDAO().insertGame(game.withBlackUsername(username));
             } catch (DataAccessException e) {
                 return false;

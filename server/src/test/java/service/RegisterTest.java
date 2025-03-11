@@ -9,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import request.RegisterRequest;
 import results.RegisterResult;
-import service.RegisterService;
 
 import static org.junit.jupiter.api.Assertions.*;
 

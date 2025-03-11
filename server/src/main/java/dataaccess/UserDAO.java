@@ -2,43 +2,74 @@ package dataaccess;
 
 import model.UserData;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class UserDAO {
 
     public UserDAO() {
     }
 
-    //Create User
-    public void insertUser(UserData user) throws  DataAccessException{
-        if (DataStore.USERS.containsKey(user.username())) {
-            throw new DataAccessException("User already exists.");
-        }
+    public void insertUser(UserData user) throws DataAccessException {
+        String sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
 
-        DataStore.USERS.put(user.username(), user);
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.username());
+            stmt.setString(2, user.password()); // Assume password is already hashed
+            stmt.setString(3, user.email());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error inserting user: " + e.getMessage());
+        }
     }
 
-    //Read information about users
-    public UserData getUser(String username) throws DataAccessException{
-        if (DataStore.USERS.containsKey(username)) {
-            return DataStore.USERS.get(username);
+    public UserData getUser(String username) throws DataAccessException {
+        String sql = "SELECT * FROM users WHERE username = ?";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new UserData(
+                            rs.getString("username"),
+                            rs.getString("password"),
+                            rs.getString("email")
+                    );
+                } else {
+                    throw new DataAccessException("User doesn't exist.");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error getting user: " + e.getMessage());
         }
-        throw new DataAccessException("User doesn't exist.");
     }
 
     public boolean usernameExists(String username) throws DataAccessException {
-        return DataStore.USERS.containsKey(username);
+        String sql = "SELECT username FROM users WHERE username = ?";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error checking username: " + e.getMessage());
+        }
     }
 
     public void clear() throws DataAccessException {
-        DataStore.USERS.clear();
+        String sql = "DELETE FROM users";
+
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error clearing users: " + e.getMessage());
+        }
     }
-
 }
-
-//String username, String password, String email
-
-/*
-Create objects in the data store
-Read objects from the data store
-Update objects already in the data store
-Delete objects from the data store
-*/

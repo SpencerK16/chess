@@ -5,8 +5,6 @@ import dataaccess.AuthDAO;
 import results.ListGamesResult;
 import request.ListGamesRequest;
 
-import java.util.List;
-
 public class ListGamesService {
 
     private final ListGamesRequest request;
