@@ -69,14 +69,4 @@ public class DatabaseManager {
             throw new DataAccessException(e.getMessage());
         }
     }
-
-    static void createTable(String tableName, String createStatement) throws DataAccessException {
-        try (var conn = getConnection();
-             var stmt = conn.createStatement()) {
-            stmt.executeUpdate(createStatement);
-        } catch (SQLException e) {
-            throw new DataAccessException("Error creating table " + tableName + ": " + e.getMessage());
-        }
-    }
-
 }

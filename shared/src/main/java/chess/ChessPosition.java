@@ -55,11 +55,4 @@ public class ChessPosition {
     public int hashCode() {
         return Objects.hash(row, col);
     }
-
-//    @Override
-//    public String toString() {
-//        Gson gson = new
-//                GsonBuilder().serializeNulls().disableHtmlEscaping().create();
-//        return gson.toJson(this);
-//    }
 }

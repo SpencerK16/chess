@@ -25,13 +25,13 @@ public class GameDAO {
             GsonBuilder gsonBuilder = new GsonBuilder();
             gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
             Gson gson = gsonBuilder.create();
-            String json_of_games_with_adapter = gson.toJson(gameData.game());
+            String jsonOfGamesWithAdapter = gson.toJson(gameData.game());
             //ChessGame game_from_json_string = new Gson().fromJson(game_as_json_string, ChessGame.class);
             stmt.setInt(1, gameData.gameID());
             stmt.setString(2, gameData.whiteUsername());
             stmt.setString(3, gameData.blackUsername());
             stmt.setString(4, gameData.gameName());
-            stmt.setString(5, json_of_games_with_adapter);
+            stmt.setString(5, jsonOfGamesWithAdapter);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException("Error inserting game: " + e.getMessage());
@@ -48,7 +48,6 @@ public class GameDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                 //System.out.println(rs.getString("game"));
-                    String game_as_json = rs.getString("game");
                     GsonBuilder gsonBuilder = new GsonBuilder();
                     gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
                     Gson gson = gsonBuilder.create();

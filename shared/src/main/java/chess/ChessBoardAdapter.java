@@ -7,7 +7,8 @@ import java.util.Map;
 
 public class ChessBoardAdapter implements JsonSerializer<ChessBoard>, JsonDeserializer<ChessBoard> {
     @Override
-    public ChessBoard deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+    public ChessBoard deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext
+            jsonDeserializationContext) throws JsonParseException {
         ChessBoard results = new ChessBoard();
         JsonArray jsonEntries = jsonElement.getAsJsonArray();
         for (JsonElement entry : jsonEntries)
