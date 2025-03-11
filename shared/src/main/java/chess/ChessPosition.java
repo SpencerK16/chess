@@ -6,6 +6,9 @@ a column number from 1-8. For example, (1,1) corresponds to the bottom left corn
 is denoted a1). (8,8) corresponds to the top right corner (h8 in chess notation).
  */
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.Objects;
 
 /**
@@ -52,4 +55,11 @@ public class ChessPosition {
     public int hashCode() {
         return Objects.hash(row, col);
     }
+
+//    @Override
+//    public String toString() {
+//        Gson gson = new
+//                GsonBuilder().serializeNulls().disableHtmlEscaping().create();
+//        return gson.toJson(this);
+//    }
 }

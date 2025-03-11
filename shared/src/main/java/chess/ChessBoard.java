@@ -16,11 +16,9 @@ import java.util.Collection;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
-    private Map<ChessPosition,ChessPiece> board;
+public class ChessBoard extends HashMap<ChessPosition,ChessPiece> {
 
     public ChessBoard() {
-        board = new HashMap<>();
     }
 
     /**
@@ -30,7 +28,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        board.put(position, piece);
+        this.put(position, piece);
     }
 
     /**
@@ -41,7 +39,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-       return board.get(position);
+       return this.get(position);
     }
 
     /**
@@ -50,7 +48,7 @@ public class ChessBoard {
      */
     public void resetBoard() {
         // Clear my board
-        board.clear();
+        this.clear();
 
         // Add the powerful pieces
         ChessPiece.PieceType[] pieceOrder = {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT,
@@ -74,15 +72,15 @@ public class ChessBoard {
             return false;
         }
         ChessBoard that = (ChessBoard) o;
-        return Objects.equals(board, that.board);
+        return Objects.equals(this.entrySet(), that.entrySet());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(board);
+        return Objects.hashCode(this);
     }
 
     public Collection<ChessPosition> getPositions() {
-        return board.keySet();
+        return this.keySet();
     }
 }

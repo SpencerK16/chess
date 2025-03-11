@@ -1,8 +1,8 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.UserDAO;
 import dataaccess.GameDAO;
+import dataaccess.UserDAO;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import model.UserData;
