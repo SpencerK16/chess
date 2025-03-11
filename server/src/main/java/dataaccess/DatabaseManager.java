@@ -39,7 +39,7 @@ public class DatabaseManager {
     static void createDatabase() throws DataAccessException {
         try {
             var statement = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME;
-            var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+            var conn = DriverManager.getConnection(CONNECTION_URL + "/" + DATABASE_NAME, USER, PASSWORD);
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
                 createUserTable();
@@ -58,8 +58,8 @@ public class DatabaseManager {
         try {
             var statement = "CREATE TABLE `users` (`username` varchar(45) NOT NULL,`password`" +
                     " varchar(100) DEFAULT NULL,`email` varchar(45)DEFAULT NULL, PRIMARY KEY (`username`)," +
-                    " UNIQUE KEY `username_UNIQUE` (`username`))";
-            var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+                    " UNIQUE KEY `username_UNIQUE` (`username`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+            var conn = DriverManager.getConnection(CONNECTION_URL + "/" + DATABASE_NAME, USER, PASSWORD);
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
@@ -76,8 +76,8 @@ public class DatabaseManager {
             var statement = "CREATE TABLE `games` (`gameID` int NOT NULL, `whiteUsername` " +
                     "varchar(45) DEFAULT NULL, `blackUsername` varchar(45)DEFAULT NULL, `gameName`" +
                     " varchar(45) DEFAULT NULL, `game` longblob, PRIMARY KEY (`gameID`), " +
-                    "UNIQUE KEY `gameID_UNIQUE` (`gameID`))";
-            var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+                    "UNIQUE KEY `gameID_UNIQUE` (`gameID`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+            var conn = DriverManager.getConnection(CONNECTION_URL + "/" + DATABASE_NAME, USER, PASSWORD);
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
@@ -93,8 +93,9 @@ public class DatabaseManager {
         try {
             var statement = "CREATE TABLE `tokens` (`authtoken` varchar(100) NOT NULL, " +
                     "`username` varchar(45) DEFAULT NULL, PRIMARY KEY (`authtoken`), " +
-                    "UNIQUE KEY `authtoken_UNIQUE` (`authtoken`))";
-            var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+                    "UNIQUE KEY `authtoken_UNIQUE` (`authtoken`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+            var conn = DriverManager.getConnection(CONNECTION_URL + "/" + DATABASE_NAME, USER, PASSWORD);
+
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
