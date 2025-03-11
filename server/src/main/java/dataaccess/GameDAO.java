@@ -15,6 +15,11 @@ import java.util.Map;
 public class GameDAO {
 
     public GameDAO() {
+        try {
+            DatabaseManager.createDatabase();
+        } catch (Exception ignored) {
+
+        }
     }
 
     public void insertGame(GameData gameData) throws DataAccessException {

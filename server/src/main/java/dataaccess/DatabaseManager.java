@@ -42,6 +42,61 @@ public class DatabaseManager {
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
+                createUserTable();
+                createGameTable();
+                createAuthTable();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    /**
+     * Creates the database if it does not already exist.
+     */
+    static void createUserTable() throws DataAccessException {
+        try {
+            var statement = "CREATE TABLE `users` (`username` varchar(45) NOT NULL,`password`" +
+                    " varchar(100) DEFAULT NULL,`email` varchar(45)DEFAULT NULL, PRIMARY KEY (`username`)," +
+                    " UNIQUE KEY `username_UNIQUE` (`username`))";
+            var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    /**
+     * Creates the database if it does not already exist.
+     */
+    static void createGameTable() throws DataAccessException {
+        try {
+            var statement = "CREATE TABLE `games` (`gameID` int NOT NULL, `whiteUsername` " +
+                    "varchar(45) DEFAULT NULL, `blackUsername` varchar(45)DEFAULT NULL, `gameName`" +
+                    " varchar(45) DEFAULT NULL, `game` longblob, PRIMARY KEY (`gameID`), " +
+                    "UNIQUE KEY `gameID_UNIQUE` (`gameID`))";
+            var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    /**
+     * Creates the database if it does not already exist.
+     */
+    static void createAuthTable() throws DataAccessException {
+        try {
+            var statement = "CREATE TABLE `tokens` (`authtoken` varchar(100) NOT NULL, " +
+                    "`username` varchar(45) DEFAULT NULL, PRIMARY KEY (`authtoken`), " +
+                    "UNIQUE KEY `authtoken_UNIQUE` (`authtoken`))";
+            var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
@@ -64,6 +119,7 @@ public class DatabaseManager {
         try {
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
             conn.setCatalog(DATABASE_NAME);
+
             return conn;
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());

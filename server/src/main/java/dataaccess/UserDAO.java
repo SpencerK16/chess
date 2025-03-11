@@ -3,6 +3,7 @@ package dataaccess;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +12,11 @@ import java.sql.SQLException;
 public class UserDAO {
 
     public UserDAO() {
+        try {
+            DatabaseManager.createDatabase();
+        } catch (Exception ignored) {
+
+        }
     }
 
     public void insertUser(UserData user) throws DataAccessException {

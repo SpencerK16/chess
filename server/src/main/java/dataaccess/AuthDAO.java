@@ -10,6 +10,11 @@ import java.sql.SQLException;
 public class AuthDAO {
 
     public AuthDAO() {
+        try {
+            DatabaseManager.createDatabase();
+        } catch (Exception ignored) {
+
+        }
     }
 
     public void insertAuth(AuthData authData) throws DataAccessException {
