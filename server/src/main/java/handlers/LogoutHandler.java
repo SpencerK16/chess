@@ -27,7 +27,7 @@ public class LogoutHandler {
         LogoutService logoutService = new LogoutService(logoutRequest, AUTH_DAO);
         LogoutResult result = logoutService.logout();
 
-        if (authToken == null || authToken.isEmpty() || Objects.equals(result.message(), "Error: Error: Auth token doesn't exist.")) {
+        if (authToken == null || authToken.isEmpty() || Objects.equals(result.message(), "Error: Auth token doesn't exist.")) {
             res.status(401);
             res.body("{ \"message\": \"Error: unauthorized\" } ");
             return res.body();

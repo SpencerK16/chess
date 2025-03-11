@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,7 +19,7 @@ public class UserDAO {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, user.username());
-            stmt.setString(2, user.password()); // Assume password is already hashed
+            stmt.setString(2, BCrypt.hashpw(user.password(), BCrypt.gensalt())); // Assume password is already hashed
             stmt.setString(3, user.email());
             stmt.executeUpdate();
         } catch (SQLException e) {

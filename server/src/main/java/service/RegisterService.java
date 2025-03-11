@@ -7,6 +7,7 @@ import model.UserData;
 import request.RegisterRequest;
 import results.RegisterResult;
 import java.util.UUID;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class RegisterService {
     private final RegisterRequest request;
@@ -29,6 +30,8 @@ public class RegisterService {
             if (request.password().isEmpty()) {
                 return new RegisterResult(false, null, null, "Error: Password too short");
             }
+
+
 
             UserData newUser = new UserData(request.username(), request.password(), request.email());
 
@@ -58,5 +61,8 @@ public class RegisterService {
      *
      *   Catch exception and pass it to the handler in the result
      * */
+
+
+
 
 }

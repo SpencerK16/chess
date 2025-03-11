@@ -67,7 +67,7 @@ public class CreateGameTest {
         CreateGameResult result = service.createGame();
 
         assertFalse(result.success());
-        assertEquals("Error: AuthToken doesn't exist.", result.message());
+        assertEquals("Error: Auth token doesn't exist.", result.message());
     }
 
 
