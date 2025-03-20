@@ -78,7 +78,25 @@ public class ClientCommander {
     }
 
     public void doDelete(String urlString) throws IOException {
+        URL url = new URL(urlString);
 
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        connection.setReadTimeout(5000);
+        connection.setRequestMethod("DELETE");
+
+        // Set HTTP request headers, if necessary
+        // connection.addRequestProperty("Authorization", "Bearer token");
+
+        connection.connect();
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            InputStream responseBody = connection.getInputStream();
+            // Read and process response body from InputStream ...
+        } else {
+            InputStream responseBody = connection.getErrorStream();
+            // Read and process error response body from InputStream ...
+        }
     }
 
     public void doPut(String urlString) throws IOException {
