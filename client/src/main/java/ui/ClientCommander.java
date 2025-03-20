@@ -100,6 +100,29 @@ public class ClientCommander {
     }
 
     public void doPut(String urlString) throws IOException {
+        URL url = new URL(urlString);
 
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        connection.setReadTimeout(5000);
+        connection.setRequestMethod("PUT");
+        connection.setDoOutput(true);
+
+        // Set HTTP request headers, if necessary
+        // connection.addRequestProperty("Content-Type", "application/json");
+
+        connection.connect();
+
+        try (OutputStream requestBody = connection.getOutputStream()) {
+            // Write request body to OutputStream ...
+        }
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            InputStream responseBody = connection.getInputStream();
+            // Read response body from InputStream ...
+        } else {
+            InputStream responseBody = connection.getErrorStream();
+            // Read and process error response body from InputStream ...
+        }
     }
 }
