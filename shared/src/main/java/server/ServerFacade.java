@@ -5,6 +5,8 @@ import exception.ErrorResponse;
 import exception.ResponseException;
 import model.Pet;
 
+
+
 import java.io.*;
 import java.net.*;
 
@@ -17,7 +19,7 @@ public class ServerFacade {
     }
 
 
-    public Pet addPet(Pet pet) throws ResponseException {
+    public Pet addPet(Pet pet) throws DataAccessException {
         var path = "/pet";
         return this.makeRequest("POST", path, pet, Pet.class);
     }

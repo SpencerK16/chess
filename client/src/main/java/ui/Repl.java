@@ -6,7 +6,8 @@ import webSocketMessages.Notification;
 
 import java.util.Scanner;
 
-import static client.EscapeSequences.*;
+import static ui.EscapeSequences.*;
+
 
 public class Repl implements NotificationHandler {
     private final PetClient client;
@@ -27,7 +28,7 @@ public class Repl implements NotificationHandler {
 
             try {
                 result = client.eval(line);
-                System.out.print(BLUE + result);
+                System.out.print(SET_BG_COLOR_BLUE + result);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -42,7 +43,7 @@ public class Repl implements NotificationHandler {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + RESET + ">>> " + GREEN);
+        System.out.print("\n" + RESET + ">>> " + SET_BG_COLOR_GREEN);
     }
 
 }
