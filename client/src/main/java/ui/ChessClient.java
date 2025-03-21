@@ -2,20 +2,22 @@ package ui;
 
 
 import java.util.Arrays;
+import java.util.Objects;
 
+import chess.ChessGame;
 import exception.ResponseException;
+import model.GameData;
 import request.*;
-import results.*;
-import server.ServerFacade;
 
 
 public class ChessClient {
 
     private State state = State.LOGGEDOUT;
-
+    private ServerFacade server;
+    private String authtoken = "";
+    
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
     }
 
 
@@ -46,7 +48,7 @@ public class ChessClient {
                 };
             }
         } catch (ResponseException ex) {
-            return ex.getMessage();
+            return ex.toString();
         }
     }
 
@@ -56,11 +58,12 @@ public class ChessClient {
         }
         var request = new RegisterRequest(params[0], params[1], params[2]);
         var result = server.register(request);
-        if (result.isSuccess()) {
+        if (result.success()) {
             state = State.LOGGEDIN;
+            authtoken = result.authToken();
             return "Registration successful. You are now logged in!";
         }
-        return "Registration failed: " + result.getMessage();
+        return "Registration failed: " + result.message();
     }
 
     private String loginCommand(String[] params) throws ResponseException {
@@ -69,22 +72,24 @@ public class ChessClient {
         }
         var request = new LoginRequest(params[0], params[1]);
         var result = server.login(request);
-        if (result.isSuccess()) {
+        if (result.success()) {
             state = State.LOGGEDIN;
+            authtoken = result.authToken();
             return "Login successful. Welcome!";
         }
-        return "Login failed: " + result.getMessage();
+        return "Login failed: " + result.message();
     }
 
     private String logoutCommand() throws ResponseException {
         assertSignedIn();
-        var request = new LogoutRequest();
+        var request = new LogoutRequest(authtoken);
         var result = server.logout(request);
-        if (result.isSuccess()) {
+        if (result.success()) {
             state = State.LOGGEDOUT;
+            authtoken = "";
             return "Logged out successfully. See you next time!";
         }
-        return "Logout failed: " + result.getMessage();
+        return "Logout failed: " + result.message();
     }
 
     private String createCommand(String[] params) throws ResponseException {
@@ -92,43 +97,56 @@ public class ChessClient {
         if (params.length < 1) {
             return "Usage: create <NAME>";
         }
-        var request = new CreateGameRequest(params[0]);
+        var request = new CreateGameRequest(authtoken, params[0]);
         var result = server.createGame(request);
-        if (result.isSuccess()) {
-            return "Game created successfully: " + result.getGameName();
+        if (result.success()) {
+            return "Game created successfully: " + params[0];
         }
-        return "Failed to create game: " + result.getMessage();
+        return "Failed to create game: " + result.message();
     }
 
     private String listCommand() throws ResponseException {
         assertSignedIn();
-        var request = new ListGamesRequest();
+        var request = new ListGamesRequest(authtoken);
         var result = server.listGames(request);
-        if (result.isSuccess()) {
-            var games = result.getGames();
+        if (result.success()) {
+            var games = result.games();
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < games.size(); i++) {
-                sb.append(i + 1).append(". ").append(games.get(i).getName())
-                        .append(" (Players: ").append(games.get(i).getPlayers()).append(")\n");
+                sb.append(i + 1).append(". ").append(games.get(i).gameName())
+                        .append(" (Players: ").append(games.get(i).whiteUsername())
+                        .append(", ").append(games.get(i).blackUsername()).append(")\n");
             }
             return sb.toString();
         }
-        return "Failed to list games: " + result.getMessage();
+        return "Failed to list games: " + result.message();
     }
 
     private String joinCommand(String[] params) throws ResponseException {
         assertSignedIn();
-        if (params.length < 1) {
-            return "Usage: join <GAME_NUMBER>";
+        if (params.length < 2) {
+            return "Usage: join <GAME_NUMBER> <WHITE | BLACK>";
         }
         int gameIndex = Integer.parseInt(params[0]) - 1;
-        var gameId = savedGameList.get(gameIndex).getId();
-        var request = new JoinGameRequest(gameId);
-        var result = server.joinGame(request);
-        if (result.isSuccess()) {
+
+        var request = new ListGamesRequest(authtoken);
+        var result = server.listGames(request);
+
+        int gameId = result.games().get(gameIndex).gameID();
+        JoinGameRequest jgRequest = null;
+        if(Objects.equals(params[1], "WHITE")) {
+            jgRequest = new JoinGameRequest(authtoken, ChessGame.TeamColor.WHITE.toString(), Integer.toString(gameId));
+        } else if (Objects.equals(params[1], "BLACK")) {
+            jgRequest = new JoinGameRequest(authtoken, ChessGame.TeamColor.BLACK.toString(), Integer.toString(gameId));
+        } else {
+            return "Usage: join <GAME_NUMBER> <WHITE | BLACK>";
+        }
+
+        var joinResult = server.joinGame(jgRequest);
+        if (joinResult.success()) {
             return "Joined game successfully!";
         }
-        return "Failed to join game: " + result.getMessage();
+        return "Failed to join game: " + result.message();
     }
 
     private String observe(String[] params) {
@@ -151,7 +169,7 @@ public class ChessClient {
         return """
         create <NAME> - a game
         list - games
-        join <ID> - a game
+        join <ID> <WHITE | BLACK> - a game
         observe <ID> - a game
         logout - when you are done
         quit - playing chess

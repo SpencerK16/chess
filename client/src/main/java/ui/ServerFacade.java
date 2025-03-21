@@ -1,3 +1,5 @@
+package ui;
+
 import com.google.gson.Gson;
 import exception.ResponseException;
 import request.*;
@@ -9,8 +11,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-
 
 public class ServerFacade {
 
@@ -22,36 +24,60 @@ public class ServerFacade {
 
     public RegisterResult register(RegisterRequest request) throws ResponseException {
         var path = "/user";
-        return this.makeRequest("POST", path, request, RegisterResult.class);
+
+        try {
+            return this.makeRequest("POST", path, request, RegisterResult.class);
+        } catch (FacadeException f) {
+            return new RegisterResult(false, "", "", f.message);
+        }
     }
 
-    public LogoutResult logout(LogoutRequest request) throws ResponseException{
+    public LogoutResult logout(LogoutRequest request) throws ResponseException {
         var path = "/session";
-        return this.makeRequest("DELETE", path, request, LogoutResult.class);
+        try {
+            return this.makeRequest("DELETE", path, request, LogoutResult.class);
+        } catch(FacadeException f) {
+            return new LogoutResult(false, f.message);
+        }
     }
 
     public LoginResult login(LoginRequest request) throws ResponseException {
         var path = "/session";
-        return this.makeRequest("POST", path, request, LoginResult.class);
+        try {
+            return this.makeRequest("POST", path, request, LoginResult.class);
+        } catch(FacadeException f) {
+            return new LoginResult(false, "", "", f.message);
+        }
     }
 
     public ListGamesResult listGames(ListGamesRequest request) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("GET", path, request, ListGamesResult.class);
+        try {
+            return this.makeRequest("GET", path, request, ListGamesResult.class);
+        } catch(FacadeException f) {
+            return new ListGamesResult(false, null, f.message);
+        }
     }
 
     public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("PUT", path, request, JoinGameResult.class);
+        try {
+            return this.makeRequest("PUT", path, request, JoinGameResult.class);
+        } catch(FacadeException f) {
+            return new JoinGameResult(false, f.message);
+        }
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
         var path = "/game";
-        return this.makeRequest("POST", path, request, CreateGameResult.class);
+        try {
+            return this.makeRequest("POST", path, request, CreateGameResult.class);
+        } catch(FacadeException f) {
+            return new CreateGameResult(false, "", f.message);
+        }
     }
 
-
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws FacadeException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -60,15 +86,19 @@ public class ServerFacade {
 
             writeBody(request, http);
             http.connect();
-            throwIfNotSuccessful(http);
+
+            if(!isSuccessful(http.getResponseCode())) {
+                throw new FacadeException(http.getResponseMessage());
+            }
+
             return readBody(http, responseClass);
-        } catch (ResponseException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+        } catch (IOException ex) {
+            throw new FacadeException(ex.getMessage());
+        }
+        catch (URISyntaxException u) {
+            throw new FacadeException("Good luck.");
         }
     }
-
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
@@ -80,32 +110,16 @@ public class ServerFacade {
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
-        var status = http.getResponseCode();
-        if (!isSuccessful(status)) {
-            try (InputStream respErr = http.getErrorStream()) {
-                if (respErr != null) {
-                    throw ResponseException.fromJson(respErr);
-                }
-            }
-
-            throw new ResponseException(status, "other failure: " + status);
-        }
-    }
-
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
         T response = null;
-        if (http.getContentLength() < 0) {
-            try (InputStream respBody = http.getInputStream()) {
+        try (InputStream respBody = http.getInputStream()) {
+            if (respBody != null && responseClass != null) {
                 InputStreamReader reader = new InputStreamReader(respBody);
-                if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
-                }
+                response = new Gson().fromJson(reader, responseClass);
             }
         }
         return response;
     }
-
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
