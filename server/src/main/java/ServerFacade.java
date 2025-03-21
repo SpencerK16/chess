@@ -1,5 +1,4 @@
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
 import exception.ResponseException;
 import request.*;
 import results.*;
