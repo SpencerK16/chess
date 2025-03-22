@@ -95,19 +95,20 @@ public class GameDAO {
         }
     }
 
-    public List<GameListData> getGames() throws DataAccessException {
+    public List<GameData> getGames() throws DataAccessException {
         String sql = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games";
-        List<GameListData> toReturn = new LinkedList<>();
+        List<GameData> toReturn = new LinkedList<>();
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                toReturn.add(new GameListData(
+                toReturn.add(new GameData(
                         rs.getInt("gameID"),
                         rs.getString("whiteUsername"),
                         rs.getString("blackUsername"),
-                        rs.getString("gameName")
+                        rs.getString("gameName"),
+                        new Gson().fromJson(rs.getString("game"), ChessGame.class)
                 ));
             }
         } catch (SQLException e) {

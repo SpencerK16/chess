@@ -15,6 +15,7 @@ public class ChessClient {
     private State state = State.LOGGEDOUT;
     private ServerFacade server;
     private String authtoken = "";
+    private String username = "";
     
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -61,6 +62,7 @@ public class ChessClient {
         if (result.success()) {
             state = State.LOGGEDIN;
             authtoken = result.authToken();
+            username = result.username();
             return "Registration successful. You are now logged in!";
         }
         return "Registration failed: " + result.message();
@@ -75,6 +77,7 @@ public class ChessClient {
         if (result.success()) {
             state = State.LOGGEDIN;
             authtoken = result.authToken();
+            username = result.username();
             return "Login successful. Welcome!";
         }
         return "Login failed: " + result.message();
@@ -87,6 +90,7 @@ public class ChessClient {
         if (result.success()) {
             state = State.LOGGEDOUT;
             authtoken = "";
+            username = "";
             return "Logged out successfully. See you next time!";
         }
         return "Logout failed: " + result.message();
@@ -144,16 +148,30 @@ public class ChessClient {
 
         var joinResult = server.joinGame(jgRequest);
         if (joinResult.success()) {
+            BoardMaker.makeBoard(result.games().get(gameIndex).game().getBoard(), Objects.equals(params[2], "WHITE"));
             return "Joined game successfully!";
         }
         return "Failed to join game: " + result.message();
     }
 
     private String observe(String[] params) {
-        return "Observe will be made in phase 6.";
+        int gameIndex = Integer.parseInt(params[0]) - 1;
+
+        try {
+            var request = new ListGamesRequest(authtoken);
+            var result = server.listGames(request);
+
+            BoardMaker.makeBoard(result.games().get(gameIndex).game().getBoard(),
+                    (Objects.equals(result.games().get(gameIndex).whiteUsername(), username)));
+            return "Observe will be made in phase 6.";
+        } catch(Exception e) {
+            return "error.";
+        }
     }
 
-
+    public boolean loggedIn() {
+        return state == State.LOGGEDIN;
+    }
 
 
     String helpLoggedOut() {

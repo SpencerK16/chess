@@ -6,7 +6,7 @@ import static ui.EscapeSequences.*;
 
 
 public class Repl {
-    private final ChessClient client;
+    private ChessClient client;
 
     public Repl(String serverUrl) {
         client = new ChessClient(serverUrl);
@@ -24,7 +24,7 @@ public class Repl {
 
             try {
                 result = client.eval(line);
-                System.out.print(SET_BG_COLOR_BLUE + result);
+                System.out.print(result);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -36,7 +36,12 @@ public class Repl {
 
 
     private void printPrompt() {
-        System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_BG_COLOR_GREEN);
+        if(client.loggedIn()) {
+            System.out.print("\n" + RESET_TEXT_COLOR + "[LOGGED IN] >>> ");
+        } else {
+            System.out.print("\n" + RESET_TEXT_COLOR + "[LOGGED OUT] >>> ");
+        }
+
     }
 
 }
