@@ -32,14 +32,13 @@ public class JoinGameHandler {
         Gson gson = new Gson();
         JoinGameRequest iRequest = gson.fromJson(req.body(), JoinGameRequest.class);
         JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, iRequest.playerColor(), iRequest.gameID());
-
-        if(!(joinGameRequest.playerColor().equalsIgnoreCase("BLACK") || joinGameRequest.playerColor().equalsIgnoreCase("WHITE"))) {
+        if (joinGameRequest.playerColor() == null || joinGameRequest.gameID() == null || joinGameRequest.playerColor().isEmpty()) {
             res.status(400);
             res.body("{ \"message\": \"Error: bad request\" } ");
             return res.body();
         }
 
-        if (joinGameRequest.playerColor() == null || joinGameRequest.gameID() == null || joinGameRequest.playerColor().isEmpty()) {
+        if(!(joinGameRequest.playerColor().equalsIgnoreCase("BLACK") || joinGameRequest.playerColor().equalsIgnoreCase("WHITE"))) {
             res.status(400);
             res.body("{ \"message\": \"Error: bad request\" } ");
             return res.body();
