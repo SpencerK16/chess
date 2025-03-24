@@ -4,7 +4,7 @@ import chess.ChessBoard;
 import chess.ChessBoardAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import exception.ResponseException;
+
 import request.*;
 import results.*;
 
@@ -25,7 +25,7 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public RegisterResult register(RegisterRequest request) throws ResponseException {
+    public RegisterResult register(RegisterRequest request) {
         var path = "/user";
 
         try {
@@ -39,7 +39,7 @@ public class ServerFacade {
         }
     }
 
-    public LogoutResult logout(LogoutRequest request) throws ResponseException {
+    public LogoutResult logout(LogoutRequest request) {
         var path = "/session";
         try {
             LogoutResult res = this.makeRequest("DELETE", path, request, LogoutResult.class, request.authToken());
@@ -53,7 +53,7 @@ public class ServerFacade {
         }
     }
 
-    public LoginResult login(LoginRequest request) throws ResponseException {
+    public LoginResult login(LoginRequest request){
         var path = "/session";
         try {
             LoginResult res = this.makeRequest("POST", path, request, LoginResult.class, null);
@@ -66,7 +66,7 @@ public class ServerFacade {
         }
     }
 
-    public ListGamesResult listGames(ListGamesRequest request) throws ResponseException {
+    public ListGamesResult listGames(ListGamesRequest request) {
         var path = "/game";
         try {
             return this.makeRequest("GET", path, request, ListGamesResult.class, request.authToken());
@@ -75,7 +75,7 @@ public class ServerFacade {
         }
     }
 
-    public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
+    public JoinGameResult joinGame(JoinGameRequest request) {
         var path = "/game";
         try {
             JoinGameResult res = this.makeRequest("PUT", path, request, JoinGameResult.class, request.authToken());
@@ -90,7 +90,7 @@ public class ServerFacade {
         }
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
+    public CreateGameResult createGame(CreateGameRequest request) {
         var path = "/game";
         try {
             return this.makeRequest("POST", path, request, CreateGameResult.class, request.authToken());
