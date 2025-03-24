@@ -96,19 +96,22 @@ public class GameDAO {
     }
 
     public List<GameData> getGames() throws DataAccessException {
-        String sql = "SELECT gameID, whiteUsername, blackUsername, gameName FROM games";
+        String sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM games";
         List<GameData> toReturn = new LinkedList<>();
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
+                Gson gson = gsonBuilder.create();
                 toReturn.add(new GameData(
                         rs.getInt("gameID"),
                         rs.getString("whiteUsername"),
                         rs.getString("blackUsername"),
                         rs.getString("gameName"),
-                        new Gson().fromJson(rs.getString("game"), ChessGame.class)
+                        gson.fromJson(rs.getString("game"), ChessGame.class)
                 ));
             }
         } catch (SQLException e) {

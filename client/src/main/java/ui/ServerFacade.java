@@ -1,6 +1,9 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessBoardAdapter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import exception.ResponseException;
 import request.*;
 import results.*;
@@ -99,9 +102,14 @@ public class ServerFacade {
 
             if(auth != null) {
                 http.setRequestProperty("authorization", auth);
+
+            }
+            //
+            if (method.equals("GET") == false)
+            {
+                writeBody(request, http);
             }
 
-            writeBody(request, http);
             http.connect();
 
             if(!isSuccessful(http.getResponseCode())) {
@@ -131,8 +139,11 @@ public class ServerFacade {
         T response = null;
         try (InputStream respBody = http.getInputStream()) {
             if (respBody != null && responseClass != null) {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
+                Gson gson = gsonBuilder.create();
                 InputStreamReader reader = new InputStreamReader(respBody);
-                response = new Gson().fromJson(reader, responseClass);
+                response = gson.fromJson(reader, responseClass);
             }
         }
         return response;

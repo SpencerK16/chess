@@ -1,6 +1,9 @@
 package handlers;
 
+import chess.ChessBoard;
+import chess.ChessBoardAdapter;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dataaccess.GameDAO;
 import request.ListGamesRequest;
 import results.ListGamesResult;
@@ -12,7 +15,9 @@ import java.io.IOException;
 
 public class ListGamesHandler {
     public static Object processRequest(Request req, Response res) throws IOException {
-        Gson gson = new Gson();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
+        Gson gson = gsonBuilder.create();
         String authToken = req.headers("authorization");
 
         ListGamesRequest request = new ListGamesRequest(authToken);
@@ -20,7 +25,7 @@ public class ListGamesHandler {
 
         if (result.success()) {
             res.status(200);
-            return "{ \"games\": " + gson.toJson(result.games()) + "}";
+            return "{ \"success\":true, \"games\": " + gson.toJson(result.games()) + ", \"message\": \"okay\"}";
         } else {
             res.status(401);
             return "{ \"message\": \"Error: " + result.message().replace("\"", "\\\"") + "\" }";
