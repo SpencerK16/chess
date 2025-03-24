@@ -13,7 +13,7 @@ import request.*;
 public class ChessClient {
 
     private State state = State.LOGGEDOUT;
-    private ServerFacade server;
+    public ServerFacade server;
     private String authtoken = "";
     private String username = "";
     

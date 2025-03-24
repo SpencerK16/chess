@@ -33,7 +33,7 @@ public class JoinGameHandler {
         JoinGameRequest iRequest = gson.fromJson(req.body(), JoinGameRequest.class);
         JoinGameRequest joinGameRequest = new JoinGameRequest(authToken, iRequest.playerColor(), iRequest.gameID());
 
-        if(!(Objects.equals(joinGameRequest.playerColor(), "BLACK") || Objects.equals(joinGameRequest.playerColor(), "WHITE"))) {
+        if(!(joinGameRequest.playerColor().equalsIgnoreCase("BLACK") || joinGameRequest.playerColor().equalsIgnoreCase("WHITE"))) {
             res.status(400);
             res.body("{ \"message\": \"Error: bad request\" } ");
             return res.body();
