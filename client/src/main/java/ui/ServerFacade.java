@@ -78,7 +78,13 @@ public class ServerFacade {
     public JoinGameResult joinGame(JoinGameRequest request) throws ResponseException {
         var path = "/game";
         try {
-            return this.makeRequest("PUT", path, request, JoinGameResult.class, request.authToken());
+            JoinGameResult res = this.makeRequest("PUT", path, request, JoinGameResult.class, request.authToken());
+
+            if(res.success() == null) {
+                return new JoinGameResult(true, res.message());
+            }
+
+            return res;
         } catch(FacadeException f) {
             return new JoinGameResult(false, f.message);
         }

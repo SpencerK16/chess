@@ -130,7 +130,7 @@ public class GameDAOTest {
             gameDAO.insertGame(game1);
             gameDAO.insertGame(game2);
 
-            List<GameListData> games = gameDAO.getGames();
+            List<GameData> games = gameDAO.getGames();
             assertNotNull(games);
             assertEquals(2, games.size());
         } catch (DataAccessException e) {
@@ -142,7 +142,7 @@ public class GameDAOTest {
     @DisplayName("Get Games - Negative Test (No Games in Database)")
     void getGamesNegativeTest() {
         try {
-            List<GameListData> games = gameDAO.getGames();
+            List<GameData> games = gameDAO.getGames();
             assertNotNull(games, "Game list should not be null");
             assertTrue(games.isEmpty(), "Game list should be empty when no games exist");
         } catch (DataAccessException e) {

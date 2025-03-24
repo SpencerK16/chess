@@ -128,7 +128,7 @@ public class ChessClient {
 
     private String joinCommand(String[] params) throws ResponseException {
         assertSignedIn();
-        if (params.length < 2) {
+        if (params.length < 1) {
             return "Usage: join <GAME_NUMBER> <WHITE | BLACK>";
         }
         int gameIndex = Integer.parseInt(params[0]) - 1;
@@ -138,9 +138,9 @@ public class ChessClient {
 
         int gameId = result.games().get(gameIndex).gameID();
         JoinGameRequest jgRequest = null;
-        if(Objects.equals(params[1], "WHITE")) {
+        if(Objects.equals(params[1], "white")) {
             jgRequest = new JoinGameRequest(authtoken, ChessGame.TeamColor.WHITE.toString(), Integer.toString(gameId));
-        } else if (Objects.equals(params[1], "BLACK")) {
+        } else if (Objects.equals(params[1], "black")) {
             jgRequest = new JoinGameRequest(authtoken, ChessGame.TeamColor.BLACK.toString(), Integer.toString(gameId));
         } else {
             return "Usage: join <GAME_NUMBER> <WHITE | BLACK>";
@@ -148,10 +148,11 @@ public class ChessClient {
 
         var joinResult = server.joinGame(jgRequest);
         if (joinResult.success()) {
-            BoardMaker.makeBoard(result.games().get(gameIndex).game().getBoard(), Objects.equals(params[2], "WHITE"));
+            BoardMaker.makeBoard(result.games().get(gameIndex).game().getBoard(),
+                    Objects.equals(params[1], "WHITE"));
             return "Joined game successfully!";
         }
-        return "Failed to join game: " + result.message();
+        return "Failed to join game: " + joinResult.message();
     }
 
     private String observe(String[] params) {
