@@ -33,14 +33,28 @@ public class ServerFacadeTests {
         server.stop();
     }
 
+
     @BeforeEach
-    void cleanup() {
+    void cleanupBeforeEach() {
         try {
             new UserDAO().clear();
             new AuthDAO().clear();
             new GameDAO().clear();
         } catch (Exception e) {
-            System.out.println("bruh");
+            e.printStackTrace();
+            throw new RuntimeException("Cleanup before test failed.", e);
+        }
+    }
+
+    @AfterEach
+    void cleanupAfterEach() {
+        try {
+            new UserDAO().clear();
+            new AuthDAO().clear();
+            new GameDAO().clear();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Cleanup after test failed.", e);
         }
     }
 
@@ -55,7 +69,7 @@ public class ServerFacadeTests {
 
     @Test
     public void testRegisterFailure() throws ResponseException {
-        RegisterRequest request = new RegisterRequest("", "", ""); // Invalid data
+        RegisterRequest request = new RegisterRequest("", "", "");
         RegisterResult result = serverFacade.register(request);
         assertEquals("Bad Request", result.message());
     }
