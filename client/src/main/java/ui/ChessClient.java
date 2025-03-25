@@ -127,7 +127,7 @@ public class ChessClient {
 
     private String joinCommand(String[] params) throws ResponseException {
         assertSignedIn();
-        if (params.length < 1) {
+        if (params.length < 2) {  // Ensure we have at least two parameters
             return "Usage: join <GAME_NUMBER> <WHITE | BLACK>";
         }
         int gameIndex = Integer.parseInt(params[0]) - 1;
@@ -137,9 +137,12 @@ public class ChessClient {
 
         int gameId = result.games().get(gameIndex).gameID();
         JoinGameRequest jgRequest = null;
-        if(Objects.equals(params[1], "white")) {
+        boolean isWhite;
+        if (params[1].equalsIgnoreCase("white")) {
+            isWhite = true;
             jgRequest = new JoinGameRequest(authtoken, ChessGame.TeamColor.WHITE.toString(), Integer.toString(gameId));
-        } else if (Objects.equals(params[1], "black")) {
+        } else if (params[1].equalsIgnoreCase("black")) {
+            isWhite = false;
             jgRequest = new JoinGameRequest(authtoken, ChessGame.TeamColor.BLACK.toString(), Integer.toString(gameId));
         } else {
             return "Usage: join <GAME_NUMBER> <WHITE | BLACK>";
@@ -147,15 +150,24 @@ public class ChessClient {
 
         var joinResult = server.joinGame(jgRequest);
         if (joinResult.success()) {
-            BoardMaker.makeBoard(result.games().get(gameIndex).game().getBoard(),
-                    Objects.equals(params[1], "WHITE"));
+            BoardMaker.makeBoard(result.games().get(gameIndex).game().getBoard(), isWhite);
             return "Joined game successfully!";
         }
         return "Failed to join game: " + joinResult.message();
     }
 
+
     private String observe(String[] params) {
-        int gameIndex = Integer.parseInt(params[0]) - 1;
+        if (params == null || params.length == 0) {
+            return "Error: No GameID provided. Please choose a GameID.";
+        }
+
+        int gameIndex;
+        try {
+            gameIndex = Integer.parseInt(params[0]) - 1;
+        } catch (NumberFormatException e) {
+            return "Error: Invalid GameID format. Please enter a numeric GameID.";
+        }
 
         try {
             var request = new ListGamesRequest(authtoken);
@@ -165,9 +177,10 @@ public class ChessClient {
                     (Objects.equals(result.games().get(gameIndex).whiteUsername(), username)));
             return "Observe will be made in phase 6.";
         } catch(Exception e) {
-            return "error.";
+            return "Error: Unable to observe game. Please ensure you have chosen a valid GameID.";
         }
     }
+
 
     public boolean loggedIn() {
         return state == State.LOGGEDIN;

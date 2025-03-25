@@ -14,10 +14,10 @@ public class BoardMaker {
 
         if (isWhiteSide) {
             columns = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
-            rows = new int[]{1, 2, 3, 4, 5, 6, 7, 8};
+            rows = new int[]{8, 7, 6, 5, 4, 3, 2, 1};
         } else {
             columns = new String[]{"h", "g", "f", "e", "d", "c", "b", "a"};
-            rows = new int[]{8, 7, 6, 5, 4, 3, 2, 1};
+            rows = new int[]{1, 2, 3, 4, 5, 6, 7, 8};
         }
 
         System.out.print("    ");
@@ -34,8 +34,8 @@ public class BoardMaker {
                 ChessPiece piece = board.getPiece(position);
 
                 String squareColor = (row + colToIndex(col)) % 2 == 0
-                        ? EscapeSequences.SET_BG_COLOR_WHITE
-                        : EscapeSequences.SET_BG_COLOR_BLACK;
+                        ? EscapeSequences.SET_BG_COLOR_BLACK
+                        : EscapeSequences.SET_BG_COLOR_WHITE;
 
                 System.out.print(squareColor);
                 if (piece == null) {
