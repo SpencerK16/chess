@@ -23,8 +23,8 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() {
         server = new Server();
-        serverFacade = new ServerFacade("http://localhost:8080");
         var port = server.run(0);
+        serverFacade = new ServerFacade("http://localhost:" + port);
         System.out.println("Started test HTTP server on " + port);
     }
 
@@ -43,18 +43,6 @@ public class ServerFacadeTests {
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Cleanup before test failed.", e);
-        }
-    }
-
-    @AfterEach
-    void cleanupAfterEach() {
-        try {
-            new UserDAO().clear();
-            new AuthDAO().clear();
-            new GameDAO().clear();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Cleanup after test failed.", e);
         }
     }
 
