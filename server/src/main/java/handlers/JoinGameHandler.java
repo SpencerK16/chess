@@ -11,7 +11,6 @@ import dataaccess.UserDAO;
 import spark.Request;
 import spark.Response;
 import java.io.IOException;
-import java.util.Objects;
 
 public class JoinGameHandler {
     public static Object processRequest(Request req, Response res) throws IOException {

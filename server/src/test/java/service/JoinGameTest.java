@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import request.JoinGameRequest;
 import results.JoinGameResult;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class JoinGameTest {
 
     private AuthDAO authDAO;

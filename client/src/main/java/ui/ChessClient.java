@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import chess.ChessGame;
 import exception.ResponseException;
-
 import request.*;
 
 

@@ -1,7 +1,6 @@
 package handlers;
 
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
 import request.LogoutRequest;
 import results.LogoutResult;
 import service.LogoutService;

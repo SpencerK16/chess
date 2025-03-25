@@ -7,7 +7,6 @@ import model.UserData;
 import request.RegisterRequest;
 import results.RegisterResult;
 import java.util.UUID;
-import org.mindrot.jbcrypt.BCrypt;
 
 public class RegisterService {
     private final RegisterRequest request;
