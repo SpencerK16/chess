@@ -5,6 +5,8 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import exception.ResponseException;
 import org.junit.jupiter.api.*;
+import request.*;
+import results.*;
 import server.Server;
 import ui.ChessClient;
 import ui.ServerFacade;

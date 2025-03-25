@@ -6,11 +6,12 @@ import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.GameData;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+
 import request.JoinGameRequest;
 import results.JoinGameResult;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JoinGameTest {
 
@@ -59,6 +60,7 @@ public class JoinGameTest {
         JoinGameService service = new JoinGameService(request, userDAO, authDAO, gameDAO);
 
         JoinGameResult result = service.joinGame();
+
 
         assertTrue(result.success());
         assertEquals("Successfully joined the game.", result.message());
