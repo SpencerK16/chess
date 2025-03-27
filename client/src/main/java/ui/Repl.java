@@ -38,6 +38,8 @@ public class Repl {
     private void printPrompt() {
         if(client.loggedIn()) {
             System.out.print("\n" + RESET_TEXT_COLOR + "[LOGGED IN] >>> ");
+        } else if(client.inGame()){
+            System.out.print("\n" + RESET_TEXT_COLOR + "[IN GAME] >>> ");
         } else {
             System.out.print("\n" + RESET_TEXT_COLOR + "[LOGGED OUT] >>> ");
         }

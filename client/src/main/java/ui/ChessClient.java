@@ -35,7 +35,7 @@ public class ChessClient {
                     case "quit" -> "quit";
                     default -> "Invalid command. Type 'help' for a list of commands.";
                 };
-            } else {
+            } else if (state == State.LOGGEDIN) {
                 return switch (cmd) {
                     case "create" -> createCommand(params);
                     case "list" -> listCommand();
@@ -46,10 +46,40 @@ public class ChessClient {
                     case "quit" -> "quit";
                     default -> "Invalid command. Type 'help' for a list of commands.";
                 };
+            } else {
+                return switch (cmd) {
+                    case "redraw" -> redrawCommand();
+                    case "leave" -> leaveCommand();
+                    case "move" -> moveCommand(params);
+                    case "resign" -> resignCommand();
+                    case "highlight" -> highlightCommand(params);
+                    case "help" -> helpInGame();
+                    default -> "Invalid command. Type 'help' for a list of commands.";
+                };
             }
         } catch (ResponseException ex) {
             return ex.toString();
         }
+    }
+
+    private String highlightCommand(String[] params) {
+        return "TODO";
+    }
+
+    private String resignCommand() {
+        return "TODO";
+    }
+
+    private String moveCommand(String[] params) {
+        return "TODO";
+    }
+
+    private String leaveCommand() {
+        return "TODO";
+    }
+
+    private String redrawCommand() {
+        return "TODO";
     }
 
     private String registerCommand(String[] params) throws ResponseException {
@@ -130,13 +160,14 @@ public class ChessClient {
         if (params.length < 2) {  // Ensure we have at least two parameters
             return "Usage: join <GAME_NUMBER> <WHITE | BLACK>";
         }
+        state = State.INGAME;
         int gameIndex = Integer.parseInt(params[0]) - 1;
 
         var request = new ListGamesRequest(authtoken);
         var result = server.listGames(request);
 
         int gameId = result.games().get(gameIndex).gameID();
-        JoinGameRequest jgRequest = null;
+        JoinGameRequest jgRequest;
         boolean isWhite;
         if (params[1].equalsIgnoreCase("white")) {
             isWhite = true;
@@ -186,6 +217,10 @@ public class ChessClient {
         return state == State.LOGGEDIN;
     }
 
+    public boolean inGame() {
+        return state == State.INGAME;
+    }
+
 
     String helpLoggedOut() {
         return """
@@ -205,6 +240,17 @@ public class ChessClient {
         logout - when you are done
         quit - playing chess
         help - with possible commands
+        """;
+    }
+
+    String helpInGame() {
+        return """
+        help - with possible commands
+        redraw - redraws the board
+        leave - removes the user from the game
+        move - moves a piece
+        resign - user forfeits the game
+        highlight - shows legal move for a piece
         """;
     }
 
