@@ -6,6 +6,7 @@ import java.util.Objects;
 
 import chess.ChessGame;
 import exception.ResponseException;
+import model.GameData;
 import request.*;
 
 
@@ -15,7 +16,8 @@ public class ChessClient {
     public ServerFacade server;
     private String authtoken = "";
     private String username = "";
-    
+    private int gameID;
+
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
     }
@@ -79,7 +81,27 @@ public class ChessClient {
     }
 
     private String redrawCommand() {
-        return "TODO";
+
+        GameData game = null;
+        var request = new ListGamesRequest(authtoken);
+        var result = server.listGames(request);
+
+        for(GameData g : result.games()) {
+            if(g.gameID() == gameID) {
+                game = g;
+                break;
+            }
+        }
+
+        if(game == null) return " ";
+
+        try {
+            BoardMaker.makeBoard(game.game().getBoard(),
+                    (Objects.equals(game.whiteUsername(), username)));
+            return " ";
+        } catch(Exception e) {
+            return "Error: Unable.";
+        }
     }
 
     private String registerCommand(String[] params) throws ResponseException {
@@ -167,6 +189,7 @@ public class ChessClient {
         var result = server.listGames(request);
 
         int gameId = result.games().get(gameIndex).gameID();
+        gameID = gameId;
         JoinGameRequest jgRequest;
         boolean isWhite;
         if (params[1].equalsIgnoreCase("white")) {
