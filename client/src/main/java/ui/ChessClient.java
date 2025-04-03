@@ -4,7 +4,10 @@ package ui;
 import java.util.Arrays;
 import java.util.Objects;
 
+import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import exception.ResponseException;
 import model.GameData;
 import request.*;
@@ -65,18 +68,59 @@ public class ChessClient {
     }
 
     private String highlightCommand(String[] params) {
-        return "TODO";
+        if (params == null || params.length != 1) {
+            return "Usage: highlight <POSITION>";
+        }
+
+        String posParam = params[0].toLowerCase();
+
+        if (!isValidPosition(posParam)) {
+            return "Error: Invalid position. Must be a-h followed by a number 1-8.";
+        }
+        char colChar = posParam.charAt(0);
+        int colIndex = colChar - 'a' + 1;
+        int row = posParam.charAt(1) - '0';
+        ChessPosition position = new ChessPosition(row, colIndex);
+
+        ChessPiece piece = ChessBoard.getPiece(position);
+        if (piece == null) {
+            return "Error: There is no piece at " + posParam + ".";
+        }
+
+        GameData game = null;
+        var request = new ListGamesRequest(authtoken);
+        var result = server.listGames(request);
+
+        for(GameData g : result.games()) {
+            if(g.gameID() == gameID) {
+                game = g;
+                break;
+            }
+        }
+
+        if(game == null) return " ";
+
+        try {
+            BoardMaker.makeBoard(game.game().getBoard(),
+                    (Objects.equals(game.whiteUsername(), username)), position);
+            return " ";
+        } catch(Exception e) {
+            return "Error: Unable.";
+        }
     }
 
     private String resignCommand() {
+        // How can I end a game?
         return "TODO";
     }
 
     private String moveCommand(String[] params) {
+        //Talk with the TAs
         return "TODO";
     }
 
     private String leaveCommand() {
+        //Send in a blank?
         return "TODO";
     }
 
@@ -282,5 +326,14 @@ public class ChessClient {
         if (state == State.LOGGEDOUT) {
             throw new ResponseException(400, "You must sign in");
         }
+    }
+
+    private boolean isValidPosition(String pos) {
+        if (pos == null || pos.length() != 2) {
+            return false;
+        }
+        char col = pos.charAt(0);
+        char row = pos.charAt(1);
+        return (col >= 'a' && col <= 'h') && (row >= '1' && row <= '8');
     }
 }
