@@ -4,9 +4,11 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
+import java.util.Collection;
+
 public class BoardMaker {
 
-    public static void makeBoard(ChessBoard board, boolean isWhiteSide) {
+    public static void makeBoard(ChessBoard board, boolean isWhiteSide, Collection<ChessPosition> highlightedPositions) {
         System.out.println(EscapeSequences.ERASE_SCREEN);
 
         String[] columns;
@@ -33,7 +35,10 @@ public class BoardMaker {
                 ChessPosition position = new ChessPosition(row, colToIndex(col));
                 ChessPiece piece = board.getPiece(position);
 
-                String squareColor = (row + colToIndex(col)) % 2 == 0
+                boolean isHighlighted = highlightedPositions != null && highlightedPositions.contains(position);
+                String squareColor = isHighlighted
+                        ? EscapeSequences.SET_BG_COLOR_GREEN
+                        : (row + colToIndex(col)) % 2 == 0
                         ? EscapeSequences.SET_BG_COLOR_BLACK
                         : EscapeSequences.SET_BG_COLOR_WHITE;
 

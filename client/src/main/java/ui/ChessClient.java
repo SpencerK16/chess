@@ -97,7 +97,7 @@ public class ChessClient {
 
         try {
             BoardMaker.makeBoard(game.game().getBoard(),
-                    (Objects.equals(game.whiteUsername(), username)));
+                    (Objects.equals(game.whiteUsername(), username)), null);
             return " ";
         } catch(Exception e) {
             return "Error: Unable.";
@@ -204,7 +204,7 @@ public class ChessClient {
 
         var joinResult = server.joinGame(jgRequest);
         if (joinResult.success()) {
-            BoardMaker.makeBoard(result.games().get(gameIndex).game().getBoard(), isWhite);
+            BoardMaker.makeBoard(result.games().get(gameIndex).game().getBoard(), isWhite, null);
             return "Joined game successfully!";
         }
         return "Failed to join game: " + joinResult.message();
@@ -228,7 +228,7 @@ public class ChessClient {
             var result = server.listGames(request);
 
             BoardMaker.makeBoard(result.games().get(gameIndex).game().getBoard(),
-                    (Objects.equals(result.games().get(gameIndex).whiteUsername(), username)));
+                    (Objects.equals(result.games().get(gameIndex).whiteUsername(), username)), null);
             return "Observe will be made in phase 6.";
         } catch(Exception e) {
             return "Error: Unable to observe game. Please ensure you have chosen a valid GameID.";
