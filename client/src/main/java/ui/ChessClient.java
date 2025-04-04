@@ -1,13 +1,9 @@
 package ui;
 
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import exception.ResponseException;
 import model.GameData;
 import request.*;
@@ -82,11 +78,6 @@ public class ChessClient {
         int row = posParam.charAt(1) - '0';
         ChessPosition position = new ChessPosition(row, colIndex);
 
-        ChessPiece piece = ChessBoard.getPiece(position);
-        if (piece == null) {
-            return "Error: There is no piece at " + posParam + ".";
-        }
-
         GameData game = null;
         var request = new ListGamesRequest(authtoken);
         var result = server.listGames(request);
@@ -100,9 +91,20 @@ public class ChessClient {
 
         if(game == null) return " ";
 
+        ChessPiece piece = game.game().getBoard().getPiece(position);
+        if (piece == null) {
+            return "Error: There is no piece at " + posParam + ".";
+        }
+
+        Collection<ChessPosition> toHighlight = new LinkedList<ChessPosition>();
+        for(ChessMove cM : piece.pieceMoves(game.game().getBoard(), position))
+            toHighlight.add(cM.getEndPosition());
+
+//        toHighlight.add(position);
+
         try {
             BoardMaker.makeBoard(game.game().getBoard(),
-                    (Objects.equals(game.whiteUsername(), username)), position);
+                    (Objects.equals(game.whiteUsername(), username)), toHighlight);
             return " ";
         } catch(Exception e) {
             return "Error: Unable.";

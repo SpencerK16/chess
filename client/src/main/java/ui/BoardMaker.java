@@ -36,11 +36,16 @@ public class BoardMaker {
                 ChessPiece piece = board.getPiece(position);
 
                 boolean isHighlighted = highlightedPositions != null && highlightedPositions.contains(position);
-                String squareColor = isHighlighted
-                        ? EscapeSequences.SET_BG_COLOR_GREEN
-                        : (row + colToIndex(col)) % 2 == 0
-                        ? EscapeSequences.SET_BG_COLOR_BLACK
-                        : EscapeSequences.SET_BG_COLOR_WHITE;
+                String squareColor;
+                if(!isHighlighted) {
+                    squareColor = (row + colToIndex(col)) % 2 == 0
+                            ? EscapeSequences.SET_BG_COLOR_BLACK
+                            : EscapeSequences.SET_BG_COLOR_WHITE;
+                } else {
+                    squareColor = (row + colToIndex(col)) % 2 == 0
+                            ? EscapeSequences.SET_BG_COLOR_DARK_GREEN
+                            : EscapeSequences.SET_BG_COLOR_GREEN;
+                }
 
                 System.out.print(squareColor);
                 if (piece == null) {
