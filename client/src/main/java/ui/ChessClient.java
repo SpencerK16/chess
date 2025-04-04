@@ -117,8 +117,31 @@ public class ChessClient {
     }
 
     private String moveCommand(String[] params) {
-        //Talk with the TAs
-        return "TODO";
+            if (params == null || params.length != 2) {
+                return "Usage: move <START> <END>";
+            }
+
+            String startParam = params[0].toLowerCase();
+            if (!isValidPosition(startParam)) {
+                return "Error: Invalid starting position. Must be a-h followed by a number 1-8.";
+            }
+
+            String endParam = params[1].toLowerCase();
+            if (!isValidPosition(endParam)) {
+                return "Error: Invalid ending position. Must be a-h followed by a number 1-8.";
+            }
+
+            char startColChar = startParam.charAt(0);
+            int startColIndex = startColChar - 'a' + 1;
+            int startRow = startParam.charAt(1) - '0';
+            ChessPosition startPosition = new ChessPosition(startRow, startColIndex);
+
+            char endColChar = endParam.charAt(0);
+            int endColIndex = endColChar - 'a' + 1;
+            int endRow = endParam.charAt(1) - '0';
+            ChessPosition endPosition = new ChessPosition(endRow, endColIndex);
+
+            return "TODO: Implement move from " + startParam + " to " + endParam + ".";
     }
 
     private String leaveCommand() {
