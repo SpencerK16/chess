@@ -3,13 +3,16 @@ package server;
 import handlers.*;
 import results.ClearResult;
 import spark.*;
+import websocket.WSServer;
 
 public class Server {
-
+    private WSServer ws;
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+        ws = new WSServer();
+        Spark.webSocket("/ws", ws);
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", ClearHandler::processRequest);

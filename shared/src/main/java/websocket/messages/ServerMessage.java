@@ -1,5 +1,8 @@
 package websocket.messages;
 
+import chess.ChessGame;
+import model.GameData;
+
 import java.util.Objects;
 
 /**
@@ -16,6 +19,10 @@ public class ServerMessage {
         ERROR,
         NOTIFICATION
     }
+
+    public GameData game;
+    public String message;
+    public String errorMessage;
 
     public ServerMessage(ServerMessageType type) {
         this.serverMessageType = type;

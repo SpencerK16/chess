@@ -7,6 +7,7 @@ import chess.*;
 import exception.ResponseException;
 import model.GameData;
 import request.*;
+import websocket.WSClient;
 
 
 public class ChessClient {
@@ -16,6 +17,7 @@ public class ChessClient {
     private String authtoken = "";
     private String username = "";
     private int gameID;
+    private WSClient ws;
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -192,6 +194,8 @@ public class ChessClient {
         if (params.length < 2) {
             return "Usage: login <USERNAME> <PASSWORD>";
         }
+//        ws = new WebSocketFacade(serverUrl, notificationHandler);
+//        ws.enterPetShop(visitorName);
         var request = new LoginRequest(params[0], params[1]);
         var result = server.login(request);
         if (result.success()) {
