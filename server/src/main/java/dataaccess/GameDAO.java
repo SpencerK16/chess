@@ -84,6 +84,23 @@ public class GameDAO {
         }
     }
 
+    public void updateGame(GameData gameData) throws DataAccessException {
+        String sql = "UPDATE games SET game = ? WHERE gameID = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(ChessBoard.class, new ChessBoardAdapter());
+            Gson gson = gsonBuilder.create();
+            String jsonOfGame = gson.toJson(gameData.game());
+            stmt.setString(1, jsonOfGame);
+            stmt.setInt(2, gameData.gameID());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error updating game: " + e.getMessage());
+        }
+    }
+
+
     public void clear() throws DataAccessException {
         String sql = "DELETE FROM games";
 

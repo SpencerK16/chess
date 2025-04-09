@@ -1,6 +1,7 @@
 package websocket;
 
 import chess.ChessBoard;
+import chess.*;
 import chess.ChessBoardAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,10 +16,7 @@ import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @WebSocket
 public class WSServer {
@@ -37,7 +35,148 @@ public class WSServer {
             case CONNECT -> processConnect(ugc, session);
 
             case MAKE_MOVE -> {
-                System.out.print("make a move\n");
+                //System.out.print("make a move\n");
+
+                GameDAO gameDAO = new GameDAO();
+                GameData gameData;
+                try {
+                    gameData = gameDAO.getGame(ugc.getGameID());
+                } catch (DataAccessException ex) {
+                    ServerMessage errorMsg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                    errorMsg.errorMessage = "Error: Game not found.";
+                    session.getRemote().sendString(new Gson().toJson(errorMsg));
+                    break;
+                }
+                AuthDAO authDAO = new AuthDAO();
+                AuthData userData = null;
+                try {
+                    userData = authDAO.getAuth(ugc.getAuthToken());
+                } catch (DataAccessException ex) {
+                    ServerMessage errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                    errorMessage.errorMessage = "error user unauthorized!";
+                    String messageString = new Gson().toJson(errorMessage);
+                    session.getRemote().sendString(messageString);
+                    return;
+                }
+
+                ChessGame chessGame = gameData.game();
+                ChessMove requestedMove = ugc.move;
+
+                if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) ||
+                        chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) ||
+                        chessGame.isInStalemate(ChessGame.TeamColor.WHITE) ||
+                        chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
+
+                    ServerMessage errorMsg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                    errorMsg.errorMessage = "Error users can't when game is over";
+                    session.getRemote().sendString(new Gson().toJson(errorMsg));
+                    return;
+                }
+                boolean isWhitePlayer = userData.username().equals(gameData.whiteUsername());
+                boolean isBlackPlayer = userData.username().equals(gameData.blackUsername());
+
+                try {
+                    if (isWhitePlayer || isBlackPlayer){
+                        if ((isWhitePlayer && chessGame.getTeamTurn() == ChessGame.TeamColor.WHITE) || (isBlackPlayer && chessGame.getTeamTurn() == ChessGame.TeamColor.BLACK)) {
+                            chessGame.makeMove(requestedMove);
+                            gameDAO.updateGame(gameData);
+                        } else {
+                            ServerMessage errorMsg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                            errorMsg.errorMessage = "Error users can't move for opponent";
+                            session.getRemote().sendString(new Gson().toJson(errorMsg));
+                            return;
+                        }
+
+                    } else {
+                        ServerMessage errorMsg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                        errorMsg.errorMessage = "Error observers cannot make move";
+                        session.getRemote().sendString(new Gson().toJson(errorMsg));
+                        return;
+                    }
+
+                } catch (InvalidMoveException ex) {
+                    ServerMessage errorMsg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                    errorMsg.errorMessage = "Invalid move: " + ex.getMessage();
+                    session.getRemote().sendString(new Gson().toJson(errorMsg));
+                    break;
+                } catch (Exception ex) {
+                    ServerMessage errorMsg = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                    errorMsg.errorMessage = "Error while moving: " + ex.getMessage();
+                    session.getRemote().sendString(new Gson().toJson(errorMsg));
+                    break;
+                }
+
+                ServerMessage loadGameMsg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+                loadGameMsg.game = gameData;
+
+                List<String> removeList = new ArrayList<>();
+                for (String otherAuthToken : sessionCollection.keySet()) {
+                    Session otherSession = sessionCollection.get(otherAuthToken);
+                    if (otherSession.isOpen()) {
+                        otherSession.getRemote().sendString(new Gson().toJson(loadGameMsg));
+                        System.out.print("Sent load game to " + otherAuthToken);
+                    } else {
+                        removeList.add(otherAuthToken);
+                    }
+                }
+                for (String token : removeList) {
+                    sessionCollection.remove(token);
+                }
+
+                ServerMessage notifyMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                notifyMsg.message = "Move: "
+                        + requestedMove.getStartPosition()
+                        + " to " + requestedMove.getEndPosition();
+
+                removeList.clear();
+                for (String otherAuthToken : sessionCollection.keySet()) {
+                    Session otherSession = sessionCollection.get(otherAuthToken);
+                    if (otherSession.isOpen()) {
+                        if (!Objects.equals(otherAuthToken, ugc.getAuthToken())) {
+                            otherSession.getRemote().sendString(new Gson().toJson(notifyMsg));
+                            System.out.print("Sent notification to " + otherAuthToken);
+                        }
+
+                    } else {
+                        removeList.add(otherAuthToken);
+                    }
+                }
+                for (String token : removeList) {
+                    sessionCollection.remove(token);
+                }
+
+                if (chessGame.isInCheck(chessGame.getTeamTurn())) {
+                    ServerMessage checkMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                    checkMsg.message = "Check!";
+                    for (String otherAuthToken : sessionCollection.keySet()) {
+                        Session otherSession = sessionCollection.get(otherAuthToken);
+                        if (otherSession.isOpen()) {
+                            otherSession.getRemote().sendString(new Gson().toJson(checkMsg));
+                        }
+                    }
+                }
+                if (chessGame.isInCheckmate(chessGame.getTeamTurn())) {
+                    ServerMessage mateMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                    mateMsg.message = "Checkmate! Game over.";
+                    for (String otherAuthToken : sessionCollection.keySet()) {
+                        Session otherSession = sessionCollection.get(otherAuthToken);
+                        if (otherSession.isOpen()) {
+                            otherSession.getRemote().sendString(new Gson().toJson(mateMsg));
+                        }
+                    }
+                }
+//                if (ChessGame.isInStalemate()) {
+//                    ServerMessage stalemateMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+//                    stalemateMsg.message = "Stalemate! Game drawn.";
+//                    for (String otherAuthToken : sessionCollection.keySet()) {
+//                        Session otherSession = sessionCollection.get(otherAuthToken);
+//                        if (otherSession.isOpen()) {
+//                            otherSession.getRemote().sendString(new Gson().toJson(stalemateMsg));
+//                        }
+//                    }
+//                }
+
+
 //                1. Server verifies the validity of the move.
 //                2. Game is updated to represent the move. Game is updated in the database.
 //                3. Server sends a LOAD_GAME message to all clients in the game (including the root client) with an updated game.
