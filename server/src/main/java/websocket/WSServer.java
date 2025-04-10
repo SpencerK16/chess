@@ -77,7 +77,8 @@ public class WSServer {
 
                 try {
                     if (isWhitePlayer || isBlackPlayer){
-                        if ((isWhitePlayer && chessGame.getTeamTurn() == ChessGame.TeamColor.WHITE) || (isBlackPlayer && chessGame.getTeamTurn() == ChessGame.TeamColor.BLACK)) {
+                        if ((isWhitePlayer && chessGame.getTeamTurn() == ChessGame.TeamColor.WHITE) || (isBlackPlayer
+                                && chessGame.getTeamTurn() == ChessGame.TeamColor.BLACK)) {
                             chessGame.makeMove(requestedMove);
                             gameDAO.updateGame(gameData);
                         } else {
@@ -114,7 +115,7 @@ public class WSServer {
                     Session otherSession = sessionCollection.get(otherAuthToken);
                     if (otherSession.isOpen()) {
                         otherSession.getRemote().sendString(new Gson().toJson(loadGameMsg));
-                        System.out.print("Sent load game to " + otherAuthToken);
+                        System.out.print("Sent load game to " + otherAuthToken + "\n");
                     } else {
                         removeList.add(otherAuthToken);
                     }
@@ -134,7 +135,7 @@ public class WSServer {
                     if (otherSession.isOpen()) {
                         if (!Objects.equals(otherAuthToken, ugc.getAuthToken())) {
                             otherSession.getRemote().sendString(new Gson().toJson(notifyMsg));
-                            System.out.print("Sent notification to " + otherAuthToken);
+                            System.out.print("Sent notification to " + otherAuthToken  + "\n");
                         }
 
                     } else {
@@ -145,16 +146,6 @@ public class WSServer {
                     sessionCollection.remove(token);
                 }
 
-                if (chessGame.isInCheck(chessGame.getTeamTurn())) {
-                    ServerMessage checkMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                    checkMsg.message = "Check!";
-                    for (String otherAuthToken : sessionCollection.keySet()) {
-                        Session otherSession = sessionCollection.get(otherAuthToken);
-                        if (otherSession.isOpen()) {
-                            otherSession.getRemote().sendString(new Gson().toJson(checkMsg));
-                        }
-                    }
-                }
                 if (chessGame.isInCheckmate(chessGame.getTeamTurn())) {
                     ServerMessage mateMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
                     mateMsg.message = "Checkmate! Game over.";
@@ -164,24 +155,27 @@ public class WSServer {
                             otherSession.getRemote().sendString(new Gson().toJson(mateMsg));
                         }
                     }
+                } else if (chessGame.isInCheck(chessGame.getTeamTurn())) {
+                    ServerMessage checkMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                    checkMsg.message = "Check!";
+                    for (String otherAuthToken : sessionCollection.keySet()) {
+                        Session otherSession = sessionCollection.get(otherAuthToken);
+                        if (otherSession.isOpen()) {
+                            otherSession.getRemote().sendString(new Gson().toJson(checkMsg));
+                        }
+                    }
                 }
-//                if (ChessGame.isInStalemate()) {
-//                    ServerMessage stalemateMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-//                    stalemateMsg.message = "Stalemate! Game drawn.";
-//                    for (String otherAuthToken : sessionCollection.keySet()) {
-//                        Session otherSession = sessionCollection.get(otherAuthToken);
-//                        if (otherSession.isOpen()) {
-//                            otherSession.getRemote().sendString(new Gson().toJson(stalemateMsg));
-//                        }
-//                    }
-//                }
 
-
-//                1. Server verifies the validity of the move.
-//                2. Game is updated to represent the move. Game is updated in the database.
-//                3. Server sends a LOAD_GAME message to all clients in the game (including the root client) with an updated game.
-//                4. Server sends a Notification message to all other clients in that game informing them what move was made.
-//                5. If the move results in check, checkmate or stalemate the server sends a Notification message to all clients.
+                if (chessGame.isInStalemate(chessGame.getTeamTurn())) {
+                    ServerMessage stalemateMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                    stalemateMsg.message = "Stalemate! Game drawn.";
+                    for (String otherAuthToken : sessionCollection.keySet()) {
+                        Session otherSession = sessionCollection.get(otherAuthToken);
+                        if (otherSession.isOpen()) {
+                            otherSession.getRemote().sendString(new Gson().toJson(stalemateMsg));
+                        }
+                    }
+                }
             }
             case LEAVE -> {
             }
